@@ -1,0 +1,42 @@
+type VaultStats @entity {
+  id: ID!
+  coretoshiTotalStake: BigInt!
+  normalTotalStake: BigInt!
+}
+
+
+type User @entity {
+  id: ID!
+  dualCoreBalance: BigInt!
+  coretoshiBalance: Int!
+}
+
+type Transaction @entity {
+  id: ID! # txn hash
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  coretoshiTransfer: [CoretoshiTransfer!]!
+  dualCoreTransfer: [DualCoreTransfer!]!
+}
+
+
+type DualCoreTransfer @entity {
+  # transaction hash + "-" + index in mints Transaction array
+  id: ID!
+  transaction: Transaction!
+  timestamp: BigInt! # need this to pull recent txns for specific token or pair
+  amount: BigInt
+  to: Bytes
+  from: Bytes
+  logIndex: BigInt
+}
+type CoretoshiTransfer @entity {
+  # transaction hash + "-" + index in mints Transaction array
+  id: ID!
+  transaction: Transaction!
+  timestamp: BigInt! # need this to pull recent txns for specific token or pair
+  tokenId: BigInt
+  to: Bytes
+  from: Bytes
+  logIndex: BigInt
+}

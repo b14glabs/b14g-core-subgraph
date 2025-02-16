@@ -1,0 +1,47 @@
+specVersion: 0.0.1
+description: B14G
+repository: https://github.com/b14g-core-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Coretoshi
+    network: core
+    source:
+      address: '0xe48696582061011beadcdb1eb132ff2261ced5cf'
+      abi: Coretoshi
+      startBlock: 20208618
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/coretoshi.ts
+      entities:
+        - Order
+      abis:
+        - name: Coretoshi
+          file: ./abis/coretoshi.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleCoretoshiTransfer
+
+  - kind: ethereum/contract
+    name: DualCoreToken
+    network: core
+    source:
+      address: '0xc5555eA27e63cd89f8b227deCe2a3916800c0f4F'
+      abi: ERC20
+      startBlock: 21009080
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/dualcore.ts
+      entities:
+        - Transfer
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer

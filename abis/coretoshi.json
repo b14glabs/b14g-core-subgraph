@@ -1,0 +1,26 @@
+[ {
+  "inputs": [
+    {
+      "indexed": true,
+      "name": "from",
+      "internalType": "address",
+      "type": "address"
+    },
+    {
+      "indexed": true,
+      "name": "to",
+      "internalType": "address",
+      "type": "address"
+    },
+    {
+      "indexed": true,
+      "name": "tokenId",
+      "internalType": "uint256",
+      "type": "uint256"
+    }
+  ],
+  "name": "Transfer",
+  "anonymous": false,
+  "type": "event"
+}
+]
