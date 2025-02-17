@@ -1,7 +1,7 @@
 import {Address} from '@graphprotocol/graph-ts'
 import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy} from '../types/Marketplace/Marketplace'
 import {Order, OrderAction, StakedInOrder, User} from '../types/schema'
-import {createTransaction, createUser, getId} from "./helpers";
+import {createUser, getId} from "./helpers";
 
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
@@ -98,7 +98,7 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
         return;
     }
     if (stakedInOrder.amount == event.params.value) {
-        let newStakedOrder:string[] = []
+        let newStakedOrder: string[] = []
         for (let i = 0; i < user.stakedOrder.length; i++) {
             if (user.stakedOrder[i] != (stakedInOrder as StakedInOrder).id) {
                 newStakedOrder.push(user.stakedOrder[i]);

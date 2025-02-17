@@ -1,14 +1,14 @@
 /* eslint-disable prefer-const */
 import {BigInt, ethereum} from '@graphprotocol/graph-ts'
-import {Transaction, User, Vault} from "../types/schema";
+import {User, Vault} from "../types/schema";
 
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export let ZERO_BI = BigInt.fromI32(0)
 export const DUAL_CORE_VAULT = "0xee21ab613d30330823D35Cf91A84cE964808B83F"
+
 export function createUser(id: string): User {
     let user = new User(id);
-    user.coretoshiBalance = 0
     user.dualCoreBalance = ZERO_BI
     user.coreStakedInOrder = ZERO_BI
     user.orderActionActivities = []
@@ -20,21 +20,10 @@ export function createUser(id: string): User {
 
 export function createVault(id: string): Vault {
     let vault = new Vault(id);
-    vault.coretoshiTotalStake = ZERO_BI
-    vault.normalTotalStake = ZERO_BI
     vault.totalStaked = ZERO_BI
     vault.activities = []
     vault.save()
     return vault;
-}
-
-export function createTransaction(id: string, event: ethereum.Event): Transaction {
-    let transaction = new Transaction(id)
-    transaction.blockNumber = event.block.number
-    transaction.timestamp = event.block.timestamp
-    transaction.coretoshiTransfer = []
-    transaction.dualCoreTransfer = []
-    return transaction;
 }
 
 export function getId(event: ethereum.Event): string {

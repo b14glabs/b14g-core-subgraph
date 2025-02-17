@@ -14,10 +14,11 @@ enum VaultActionType{
     ReInvestVault
 }
 
+
+
 type User @entity {
     id: ID!
     dualCoreBalance: BigInt!
-    coretoshiBalance: Int!
     coreStakedInOrder: BigInt!
     stakedOrder: [StakedInOrder!]!
     orderActionActivities: [OrderAction!]!
@@ -31,8 +32,6 @@ type StakedInOrder @entity{
 
 type Vault @entity {
     id: ID!
-    coretoshiTotalStake: BigInt!
-    normalTotalStake: BigInt!
     totalStaked: BigInt!
     activities:[VaultAction!]!
 }
@@ -76,43 +75,14 @@ type VaultAction @entity{
 
 
 
-
-
-
-type Transaction @entity {
-    id: ID! # txn hash
-    blockNumber: BigInt!
-    timestamp: BigInt!
-    coretoshiTransfer: [CoretoshiTransfer!]!
-    dualCoreTransfer: [DualCoreTransfer!]!
-}
-
-type TransationAction @entity{
-    id:ID!
-    blockNumber: BigInt!
-    timestamp: BigInt!
-    createOrder: [CoretoshiTransfer!]!
-    dualCoreTransfer: [DualCoreTransfer!]!
-
-}
-
 type DualCoreTransfer @entity {
     # transaction hash + "-" + index in mints Transaction array
     id: ID!
-    transaction: Transaction!
+    transaction: Bytes!
     timestamp: BigInt! # need this to pull recent txns for specific token or pair
     amount: BigInt
     to: Bytes
     from: Bytes
     logIndex: BigInt
 }
-type CoretoshiTransfer @entity {
-    # transaction hash + "-" + index in mints Transaction array
-    id: ID!
-    transaction: Transaction!
-    timestamp: BigInt! # need this to pull recent txns for specific token or pair
-    tokenId: BigInt
-    to: Bytes
-    from: Bytes
-    logIndex: BigInt
-}
+
