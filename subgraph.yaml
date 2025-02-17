@@ -45,3 +45,77 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+
+  - kind: ethereum/contract
+    name: Marketplace
+    network: core
+    source:
+      address: '0x04EA61C431F7934d51fEd2aCb2c5F942213f8967'
+      abi: Marketplace
+      startBlock: 19942200
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/marketplace.ts
+      entities:
+        - Order
+      abis:
+        - name: Marketplace
+          file: ./abis/marketplace.json
+      eventHandlers:
+        - event: CreateRewardReceiver(indexed address,indexed address,uint256,uint256)
+          handler: handleNewOrder
+        - event: StakeCoreProxy(indexed address,indexed address,indexed address,uint256)
+          handler: handleUserStake
+        - event: WithdrawProxy(indexed address,indexed address,indexed address,uint256)
+          handler: handleUserWithdraw
+        - event: ClaimProxy(indexed address,indexed address,uint256,indexed bool)
+          handler: handleClaimProxy
+  - kind: ethereum/contract
+    name: BitcoinStake
+    network: core
+    source:
+      address: '0x0000000000000000000000000000000000001014'
+      abi: BitcoinStake
+      startBlock: 19942200
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/bitcoinStake.ts
+      entities:
+        - Order
+      abis:
+        - name: BitcoinStake
+          file: ./abis/bitcoinStake.json
+      eventHandlers:
+        - event: delegated(indexed bytes32,indexed address,indexed address,bytes,uint32,uint64,uint256)
+          handler: handleBTCStaked
+  - kind: ethereum/contract
+    name: CoreVault
+    network: core
+    source:
+      address: '0xee21ab613d30330823D35Cf91A84cE964808B83F'
+      abi: CoreVault
+      startBlock: 21007765
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/coreVault.ts
+      entities:
+        - Order
+      abis:
+        - name: CoreVault
+          file: ./abis/coreVault.json
+      eventHandlers:
+        - event: Stake(indexed address,uint256,uint256)
+          handler: handleStake
+        - event: WithdrawDirect(indexed address,uint256,uint256,uint256)
+          handler: handleWithdrawDirect
+        - event: Unbond(indexed address,uint256,uint256,uint256)
+          handler: handleUnbond
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleStakeWithdraw
+

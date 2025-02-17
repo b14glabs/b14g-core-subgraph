@@ -1,6 +1,6 @@
 import {Transfer as TransferEvent} from '../types/Coretoshi/Coretoshi'
 import {log, BigInt} from '@graphprotocol/graph-ts'
-import {CoretoshiTransfer, Transaction, User, VaultStats} from '../types/schema'
+import {CoretoshiTransfer, Transaction, User, Vault} from '../types/schema'
 import {ADDRESS_ZERO, createTransaction, createUser, DUAL_CORE_VAULT} from "./helpers";
 
 
@@ -17,8 +17,8 @@ export function handleCoretoshiTransfer(event: TransferEvent): void {
     if (transaction === null) {
         transaction = createTransaction(event.transaction.hash.toHexString(), event)
     }
-    let vaultStats = VaultStats.load(DUAL_CORE_VAULT)
-    if (vaultStats === null) return;
+    let vault = Vault.load(DUAL_CORE_VAULT)
+    if (vault === null) return;
     transaction.coretoshiTransfer = transaction.coretoshiTransfer.concat([transfer.id]);
     transaction.save()
 
@@ -30,8 +30,8 @@ export function handleCoretoshiTransfer(event: TransferEvent): void {
         user.coretoshiBalance -= 1
         user.save()
         if (user.coretoshiBalance == 0) {
-            vaultStats.coretoshiTotalStake = vaultStats.coretoshiTotalStake.minus(user.dualCoreBalance);
-            vaultStats.normalTotalStake = vaultStats.normalTotalStake.plus(user.dualCoreBalance);
+            vault.coretoshiTotalStake = vault.coretoshiTotalStake.minus(user.dualCoreBalance);
+            vault.normalTotalStake = vault.normalTotalStake.plus(user.dualCoreBalance);
         }
     }
     if (event.params.to.toHexString() != ADDRESS_ZERO) {
@@ -41,12 +41,12 @@ export function handleCoretoshiTransfer(event: TransferEvent): void {
             user = createUser(event.params.to.toHexString());
         }
         if (user.coretoshiBalance == 0) {
-            vaultStats.coretoshiTotalStake = vaultStats.coretoshiTotalStake.plus(user.dualCoreBalance);
-            vaultStats.normalTotalStake = vaultStats.normalTotalStake.minus(user.dualCoreBalance);
+            vault.coretoshiTotalStake = vault.coretoshiTotalStake.plus(user.dualCoreBalance);
+            vault.normalTotalStake = vault.normalTotalStake.minus(user.dualCoreBalance);
         }
 
         user.coretoshiBalance = user.coretoshiBalance + 1
         user.save()
     }
-    vaultStats.save()
+    vault.save()
 }

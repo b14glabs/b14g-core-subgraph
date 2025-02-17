@@ -1,42 +1,118 @@
-type VaultStats @entity {
-  id: ID!
-  coretoshiTotalStake: BigInt!
-  normalTotalStake: BigInt!
-}
+enum OrderActionType {
+    CreateOrder
+    StakeCoreToOrder
+    WithdrawCoreFromOrder
+    ClaimCoreForBTCHolder
+    ClaimCoreForCoreHolder
 
+}
+enum VaultActionType{
+    StakeCoreToVault
+    RedeemNormallyCoreFromVault
+    RedeemInstantlyCoreFromVault
+    WithdrawCoreFromVault
+    ReInvestVault
+}
 
 type User @entity {
-  id: ID!
-  dualCoreBalance: BigInt!
-  coretoshiBalance: Int!
+    id: ID!
+    dualCoreBalance: BigInt!
+    coretoshiBalance: Int!
+    coreStakedInOrder: BigInt!
+    stakedOrder: [StakedInOrder!]!
+    orderActionActivities: [OrderAction!]!
+    vaultActionActivities: [VaultAction!]!
 }
+type StakedInOrder @entity{
+
+    id: ID! #orderId+userId
+    amount: BigInt!
+}
+
+type Vault @entity {
+    id: ID!
+    coretoshiTotalStake: BigInt!
+    normalTotalStake: BigInt!
+    totalStaked: BigInt!
+    activities:[VaultAction!]!
+}
+
+
+type Order @entity {
+    id: ID!
+    owner: Bytes!
+    btcAmount: BigInt
+    unlockTime: Int
+
+    # creation stats
+    createdAtTimestamp: BigInt!
+    createdAtBlockNumber: BigInt!
+    activities:[OrderAction!]!
+}
+
+
+
+
+type OrderAction @entity{
+    id: ID!
+    txHash: Bytes!
+    blockNumber: BigInt!
+    timestamp: BigInt!
+    type: OrderActionType!
+    from: Bytes!
+    order: Bytes!
+    amount: BigInt
+}
+
+type VaultAction @entity{
+    id: ID!
+    txHash: Bytes!
+    blockNumber: BigInt!
+    timestamp: BigInt!
+    type: VaultActionType!
+    from: Bytes!
+    amount: BigInt!
+}
+
+
+
+
+
 
 type Transaction @entity {
-  id: ID! # txn hash
-  blockNumber: BigInt!
-  timestamp: BigInt!
-  coretoshiTransfer: [CoretoshiTransfer!]!
-  dualCoreTransfer: [DualCoreTransfer!]!
+    id: ID! # txn hash
+    blockNumber: BigInt!
+    timestamp: BigInt!
+    coretoshiTransfer: [CoretoshiTransfer!]!
+    dualCoreTransfer: [DualCoreTransfer!]!
 }
 
+type TransationAction @entity{
+    id:ID!
+    blockNumber: BigInt!
+    timestamp: BigInt!
+    createOrder: [CoretoshiTransfer!]!
+    dualCoreTransfer: [DualCoreTransfer!]!
+
+}
 
 type DualCoreTransfer @entity {
-  # transaction hash + "-" + index in mints Transaction array
-  id: ID!
-  transaction: Transaction!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  amount: BigInt
-  to: Bytes
-  from: Bytes
-  logIndex: BigInt
+    # transaction hash + "-" + index in mints Transaction array
+    id: ID!
+    transaction: Transaction!
+    timestamp: BigInt! # need this to pull recent txns for specific token or pair
+    amount: BigInt
+    to: Bytes
+    from: Bytes
+    logIndex: BigInt
 }
 type CoretoshiTransfer @entity {
-  # transaction hash + "-" + index in mints Transaction array
-  id: ID!
-  transaction: Transaction!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  tokenId: BigInt
-  to: Bytes
-  from: Bytes
-  logIndex: BigInt
+    # transaction hash + "-" + index in mints Transaction array
+    id: ID!
+    transaction: Transaction!
+    timestamp: BigInt! # need this to pull recent txns for specific token or pair
+    tokenId: BigInt
+    to: Bytes
+    from: Bytes
+    logIndex: BigInt
 }
