@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import {BigInt, ethereum} from '@graphprotocol/graph-ts'
-import {User, Vault} from "../types/schema";
+import { Stats, User, Vault } from "../types/schema";
 
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
@@ -15,6 +15,12 @@ export function createUser(id: string): User {
     user.vaultActionActivities = []
     user.stakedOrder = [];
     user.save()
+    let stats = Stats.load("1");
+    if (!stats) {
+      stats = new Stats("1");
+    }
+    stats.totalStaker += 1;
+    stats.save();
     return user;
 }
 
