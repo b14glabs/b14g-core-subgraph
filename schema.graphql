@@ -86,3 +86,7 @@ type DualCoreTransfer @entity {
     logIndex: BigInt
 }
 
+type Stats @entity {
+  id: ID!
+  totalStaker: Int
+}
