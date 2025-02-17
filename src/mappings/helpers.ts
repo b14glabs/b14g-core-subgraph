@@ -15,9 +15,9 @@ export function createUser(id: string): User {
     user.vaultActionActivities = []
     user.stakedOrder = [];
     user.save()
-    let stats = Stats.load("1");
+    let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("1");
+      stats = new Stats("b14g");
     }
     stats.totalStaker += 1;
     stats.save();
