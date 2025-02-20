@@ -18,6 +18,9 @@ export function createUser(id: string): User {
     let stats = Stats.load("b14g");
     if (!stats) {
       stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+    //   stats.listOrder = []
     }
     stats.totalStaker += 1;
     stats.save();

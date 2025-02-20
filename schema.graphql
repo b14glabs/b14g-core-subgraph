@@ -88,5 +88,8 @@ type DualCoreTransfer @entity {
 
 type Stats @entity {
   id: ID!
-  totalStaker: Int
+  totalStaker: Int!
+  totalCoreStaked: BigInt!
+#   totalBtcStaked: BigInt!
+#   listOrder: [Order!]!
 }

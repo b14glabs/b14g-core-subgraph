@@ -1,7 +1,8 @@
-import {Address} from '@graphprotocol/graph-ts'
+import {Address, BigInt} from '@graphprotocol/graph-ts'
 import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy} from '../types/Marketplace/Marketplace'
-import {Order, OrderAction, StakedInOrder, User} from '../types/schema'
+import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
 import {createUser, getId} from "./helpers";
+import { MARKETPLACE_STRATEGE_ADDRESS } from '../constant';
 
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
@@ -42,6 +43,18 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
     orderAction.save()
+    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
+      let stats = Stats.load("b14g");
+      if (!stats) {
+        stats = new Stats("b14g");
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = new BigInt(0);
+        // stats.listOrder = []
+      }
+      stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.value);
+  
+      stats.save();
+    }
 
     let order = Order.load(event.params.receiver.toHexString())
     if (order === null) {
@@ -79,6 +92,18 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
     orderAction.save()
+    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
+      let stats = Stats.load("b14g");
+      if (!stats) {
+        stats = new Stats("b14g");
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = new BigInt(0);
+        // stats.listOrder = []
+      }
+      stats.totalCoreStaked = stats.totalCoreStaked.minus(event.params.value);
+  
+      stats.save();
+    }
 
     let order = Order.load(event.params.receiver.toHexString())
     if (order === null) {

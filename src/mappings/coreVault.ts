@@ -1,7 +1,7 @@
-import {Order, VaultAction, StakedInOrder, User, Vault} from '../types/schema'
+import {Order, VaultAction, StakedInOrder, User, Vault, Stats} from '../types/schema'
 import {createUser, createVault, DUAL_CORE_VAULT, getId, ZERO_BI} from "./helpers";
-import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault} from "../types/CoreVault/CoreVault";
-import {Address} from "@graphprotocol/graph-ts";
+import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault, ClaimReward} from "../types/CoreVault/CoreVault";
+import {Address, BigInt} from "@graphprotocol/graph-ts";
 
 const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT))
 
@@ -19,6 +19,19 @@ export function handleStake(event: Stake): void {
     vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
     vaultAction.save()
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+    //   stats.listOrder = []
+    }
+    stats.totalCoreStaked = stats.totalCoreStaked.plus(
+      event.params.coreAmount
+    );
+
+    stats.save()
 
     let user = User.load(event.params.user.toHexString());
     if (user === null) {
@@ -59,6 +72,19 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     vault.activities = vault.activities.concat([vaultAction.id])
     vault.save()
 
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+    //   stats.listOrder = []
+    }
+    stats.totalCoreStaked = (stats.totalCoreStaked.minus(
+      event.params.coreAmount
+    )).minus(event.params.fee);
+
+    stats.save()
+
 }
 
 export function handleUnbond(event: Unbond): void {
@@ -86,6 +112,19 @@ export function handleUnbond(event: Unbond): void {
 
     vault.activities = vault.activities.concat([vaultAction.id])
     vault.save()
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+    //   stats.listOrder = []
+    }
+    stats.totalCoreStaked = stats.totalCoreStaked.minus(
+      event.params.coreAmount
+    );
+
+    stats.save()
 
 }
 
@@ -143,4 +182,17 @@ export function handleReInvest(event: ReInvest): void {
     vault.activities = vault.activities.concat([vaultAction.id])
     vault.save()
 
+}
+
+export function handleClaimReward(event: ClaimReward): void {
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
+  
+    stats.save();
 }
