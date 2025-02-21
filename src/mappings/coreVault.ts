@@ -18,7 +18,6 @@ export function handleStake(event: Stake): void {
     vaultAction.type = "StakeCoreToVault"
     vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.save()
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -31,7 +30,9 @@ export function handleStake(event: Stake): void {
       event.params.coreAmount
     );
 
+    vaultAction.totalCoreStaked = stats.totalCoreStaked
     stats.save()
+    vaultAction.save()
 
     let user = User.load(event.params.user.toHexString());
     if (user === null) {
@@ -59,18 +60,6 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     vaultAction.type = "RedeemInstantlyCoreFromVault"
     vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.save()
-
-    let user = User.load(event.params.user.toHexString());
-    if (user === null) {
-        return
-    }
-    user.vaultActionActivities = user.vaultActionActivities.concat([vaultAction.id])
-    user.save()
-
-
-    vault.activities = vault.activities.concat([vaultAction.id])
-    vault.save()
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -83,7 +72,20 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
       event.params.coreAmount
     )).minus(event.params.fee);
 
+    vaultAction.totalCoreStaked = stats.totalCoreStaked
+
     stats.save()
+    vaultAction.save()
+
+    let user = User.load(event.params.user.toHexString());
+    if (user === null) {
+        return
+    }
+    user.vaultActionActivities = user.vaultActionActivities.concat([vaultAction.id])
+    user.save()
+
+    vault.activities = vault.activities.concat([vaultAction.id])
+    vault.save()
 
 }
 
@@ -100,18 +102,6 @@ export function handleUnbond(event: Unbond): void {
     vaultAction.type = "RedeemNormallyCoreFromVault"
     vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.save()
-
-    let user = User.load(event.params.user.toHexString());
-    if (user === null) {
-        return
-    }
-    user.vaultActionActivities = user.vaultActionActivities.concat([vaultAction.id])
-    user.save()
-
-
-    vault.activities = vault.activities.concat([vaultAction.id])
-    vault.save()
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -124,7 +114,20 @@ export function handleUnbond(event: Unbond): void {
       event.params.coreAmount
     );
 
+    vaultAction.totalCoreStaked = stats.totalCoreStaked
     stats.save()
+    vaultAction.save()
+
+    let user = User.load(event.params.user.toHexString());
+    if (user === null) {
+        return
+    }
+    user.vaultActionActivities = user.vaultActionActivities.concat([vaultAction.id])
+    user.save()
+
+
+    vault.activities = vault.activities.concat([vaultAction.id])
+    vault.save()
 
 }
 
@@ -141,6 +144,15 @@ export function handleStakeWithdraw(event: Withdraw): void {
     vaultAction.type = "WithdrawCoreFromVault"
     vaultAction.from = event.params.user;
     vaultAction.amount = event.params.amount;
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    vaultAction.totalCoreStaked = stats.totalCoreStaked
     vaultAction.save()
 
     let user = User.load(event.params.user.toHexString());
@@ -169,6 +181,15 @@ export function handleReInvest(event: ReInvest): void {
     vaultAction.type = "ReInvestVault"
     vaultAction.from = event.transaction.from;
     vaultAction.amount = coreVaultContract.totalStaked();
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    vaultAction.totalCoreStaked = stats.totalCoreStaked
     vaultAction.save()
 
     let user = User.load(event.transaction.from.toHexString());

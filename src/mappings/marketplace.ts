@@ -14,6 +14,15 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.type = "CreateOrder"
     orderAction.from = event.params.from;
     orderAction.order = event.params.rewardReceiver;
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let user = User.load(event.params.from.toHexString());
@@ -42,19 +51,21 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
-    orderAction.save()
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
     if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
-      let stats = Stats.load("b14g");
-      if (!stats) {
-        stats = new Stats("b14g");
-        stats.totalStaker = 0;
-        stats.totalCoreStaked = new BigInt(0);
-        // stats.listOrder = []
-      }
       stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.value);
   
       stats.save();
     }
+
+    orderAction.totalCoreStaked = stats.totalCoreStaked
+    orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
     if (order === null) {
@@ -91,19 +102,20 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
-    orderAction.save()
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
     if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
-      let stats = Stats.load("b14g");
-      if (!stats) {
-        stats = new Stats("b14g");
-        stats.totalStaker = 0;
-        stats.totalCoreStaked = new BigInt(0);
-        // stats.listOrder = []
-      }
       stats.totalCoreStaked = stats.totalCoreStaked.minus(event.params.value);
   
       stats.save();
     }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
+    orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
     if (order === null) {
@@ -145,6 +157,15 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.amount;
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
