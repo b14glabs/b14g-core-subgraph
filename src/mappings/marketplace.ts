@@ -13,7 +13,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "CreateOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.rewardReceiver;
+    orderAction.order = event.params.rewardReceiver.toHexString();
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -52,7 +52,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "StakeCoreToOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver;
+    orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -101,7 +101,7 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "WithdrawCoreFromOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver;
+    orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -155,7 +155,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.type = event.params.isBtcClaim ? "ClaimCoreForBTCHolder" : "ClaimCoreForCoreHolder"
 
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver;
+    orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.amount;
 
     let stats = Stats.load("b14g");
