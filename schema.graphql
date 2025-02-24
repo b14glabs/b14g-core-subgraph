@@ -59,7 +59,7 @@ type OrderAction @entity{
     timestamp: BigInt!
     type: OrderActionType!
     from: Bytes!
-    order: Bytes!
+    order: Order!
     amount: BigInt
     totalCoreStaked: BigInt!
 }
