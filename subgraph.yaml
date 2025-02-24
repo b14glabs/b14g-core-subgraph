@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.4
 description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
@@ -97,4 +97,5 @@ dataSources:
           handler: handleUnbond
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleStakeWithdraw
-
+        - event: ClaimReward(uint256,uint256)
+          handler: handleClaimReward

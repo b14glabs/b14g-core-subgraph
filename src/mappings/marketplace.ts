@@ -1,7 +1,8 @@
-import {Address} from '@graphprotocol/graph-ts'
+import {Address, BigInt} from '@graphprotocol/graph-ts'
 import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy} from '../types/Marketplace/Marketplace'
-import {Order, OrderAction, StakedInOrder, User} from '../types/schema'
+import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
 import {createUser, getId} from "./helpers";
+import { MARKETPLACE_STRATEGE_ADDRESS } from '../constant';
 
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
@@ -13,6 +14,16 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.type = "CreateOrder"
     orderAction.from = event.params.from;
     orderAction.order = event.params.rewardReceiver;
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+    //   stats.totalEarned = new BigInt(0)
+    //   stats.listOrder = []
+    }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let user = User.load(event.params.from.toHexString());
@@ -27,7 +38,9 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     order.createdAtTimestamp = event.block.timestamp;
     order.createdAtBlockNumber = event.block.number;
     order.activities = [orderAction.id]
+    // order.stakedAmount = new BigInt(0)
     order.save()
+    // stats.listOrder = stats.listOrder.concat([order.id])
 
 }
 
@@ -41,6 +54,17 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      return
+    }
+    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
+      stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.value);
+  
+      stats.save();
+    }
+
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
@@ -48,6 +72,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
         return;
     }
     order.activities = order.activities.concat([orderAction.id])
+    // order.stakedAmount = order.stakedAmount.plus(event.params.value)
     order.save()
 
     let user = User.load(event.params.from.toHexString());
@@ -78,6 +103,16 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      return
+    }
+    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
+      stats.totalCoreStaked = stats.totalCoreStaked.minus(event.params.value);
+  
+      stats.save();
+    }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
@@ -85,6 +120,7 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
         return;
     }
     order.activities = order.activities.concat([orderAction.id])
+    // order.stakedAmount = order.stakedAmount.minus(event.params.value)
     order.save()
 
     let user = User.load(event.params.from.toHexString());
@@ -117,9 +153,19 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.timestamp = event.block.timestamp;
     orderAction.txHash = event.transaction.hash;
     orderAction.type = event.params.isBtcClaim ? "ClaimCoreForBTCHolder" : "ClaimCoreForCoreHolder"
+
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.amount;
+
+    let stats = Stats.load("b14g");
+    if (!stats) {
+      stats = new Stats("b14g");
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = new BigInt(0);
+      // stats.listOrder = []
+    }
+    orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
     let order = Order.load(event.params.receiver.toHexString())
