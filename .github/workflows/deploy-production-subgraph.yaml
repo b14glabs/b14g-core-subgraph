@@ -30,4 +30,4 @@ jobs:
         run: ./node_modules/@graphprotocol/graph-cli/bin/run codegen --output-dir src/types/
 
       - name: Deploy
-        run: ./node_modules/@graphprotocol/graph-cli/bin/run deploy ${{ secret.SUBGRAPH_NAME }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }}
+        run: ./node_modules/@graphprotocol/graph-cli/bin/run deploy ${{ secrets.SUBGRAPH_NAME }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }}
