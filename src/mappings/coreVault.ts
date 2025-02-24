@@ -63,10 +63,7 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
 
     let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("b14g");
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
-    //   stats.listOrder = []
+      return
     }
     stats.totalCoreStaked = (stats.totalCoreStaked.minus(
       event.params.coreAmount
@@ -105,10 +102,7 @@ export function handleUnbond(event: Unbond): void {
 
     let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("b14g");
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
-    //   stats.listOrder = []
+      return
     }
     stats.totalCoreStaked = stats.totalCoreStaked.minus(
       event.params.coreAmount
@@ -147,10 +141,7 @@ export function handleStakeWithdraw(event: Withdraw): void {
 
     let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("b14g");
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
-      // stats.listOrder = []
+      return
     }
     vaultAction.totalCoreStaked = stats.totalCoreStaked
     vaultAction.save()
@@ -184,10 +175,7 @@ export function handleReInvest(event: ReInvest): void {
 
     let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("b14g");
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
-      // stats.listOrder = []
+      return
     }
     vaultAction.totalCoreStaked = stats.totalCoreStaked
     vaultAction.save()
@@ -208,10 +196,7 @@ export function handleReInvest(event: ReInvest): void {
 export function handleClaimReward(event: ClaimReward): void {
     let stats = Stats.load("b14g");
     if (!stats) {
-      stats = new Stats("b14g");
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
-      // stats.listOrder = []
+      return
     }
     stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
   
