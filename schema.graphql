@@ -20,20 +20,21 @@ type User @entity {
     id: ID!
     dualCoreBalance: BigInt!
     coreStakedInOrder: BigInt!
-    stakedOrder: [StakedInOrder!]!
-    orderActionActivities: [OrderAction!]!
-    vaultActionActivities: [VaultAction!]!
+    stakedOrder: [StakedInOrder!]! @derivedFrom(field: "user")
+    orderActionActivities: [OrderAction!]! @derivedFrom(field: "from")
+    vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
 }
 type StakedInOrder @entity{
 
     id: ID! #orderId+userId
     amount: BigInt!
+    user: User! 
 }
 
 type Vault @entity {
     id: ID!
     totalStaked: BigInt!
-    activities:[VaultAction!]!
+    activities:[VaultAction!]! @derivedFrom(field: "to")
 }
 
 
@@ -47,7 +48,7 @@ type Order @entity {
     # creation stats
     createdAtTimestamp: BigInt!
     createdAtBlockNumber: BigInt!
-    activities:[OrderAction!]!
+    activities:[OrderAction!]! @derivedFrom(field: "order")
 }
 
 
@@ -59,7 +60,7 @@ type OrderAction @entity{
     blockNumber: BigInt!
     timestamp: BigInt!
     type: OrderActionType!
-    from: Bytes!
+    from: User!
     order: Order!
     amount: BigInt
     totalCoreStaked: BigInt!
@@ -71,7 +72,8 @@ type VaultAction @entity{
     blockNumber: BigInt!
     timestamp: BigInt!
     type: VaultActionType!
-    from: Bytes!
+    from: User!
+    to: Vault!
     amount: BigInt!
     totalCoreStaked: BigInt!
 }
