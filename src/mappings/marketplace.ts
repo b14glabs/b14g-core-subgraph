@@ -12,7 +12,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.timestamp = event.block.timestamp;
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "CreateOrder"
-    orderAction.from = event.params.from;
+    orderAction.from = event.params.from.toHexString();
     orderAction.order = event.params.rewardReceiver.toHexString();
 
     let stats = Stats.load("b14g");
@@ -30,14 +30,12 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     if (user === null) {
         user = createUser(event.params.from.toHexString());
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.save()
 
     let order = new Order(event.params.rewardReceiver.toHexString()) as Order
     order.owner = event.params.from;
     order.createdAtTimestamp = event.block.timestamp;
     order.createdAtBlockNumber = event.block.number;
-    order.activities = [orderAction.id]
     // order.stakedAmount = new BigInt(0)
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])
@@ -51,7 +49,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.timestamp = event.block.timestamp;
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "StakeCoreToOrder"
-    orderAction.from = event.params.from;
+    orderAction.from = event.params.from.toHexString();
     orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
@@ -71,7 +69,6 @@ export function handleUserStake(event: StakeCoreProxy): void {
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     // order.stakedAmount = order.stakedAmount.plus(event.params.value)
     order.save()
 
@@ -79,13 +76,12 @@ export function handleUserStake(event: StakeCoreProxy): void {
     if (user === null) {
         user = createUser(event.params.from.toHexString());
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.coreStakedInOrder = user.coreStakedInOrder.plus(event.params.value)
     let stakedInOrder = StakedInOrder.load(order.id + '-' + user.id)
     if (stakedInOrder === null) {
         stakedInOrder = new StakedInOrder(order.id + '-' + user.id)
         stakedInOrder.amount = event.params.value;
-        user.stakedOrder = user.stakedOrder.concat([stakedInOrder.id])
+        stakedInOrder.user = event.params.from.toHexString()
     } else {
         stakedInOrder.amount = stakedInOrder.amount.plus(event.params.value)
     }
@@ -100,7 +96,7 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.timestamp = event.block.timestamp;
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "WithdrawCoreFromOrder"
-    orderAction.from = event.params.from;
+    orderAction.from = event.params.from.toHexString();
     orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
@@ -119,7 +115,6 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     // order.stakedAmount = order.stakedAmount.minus(event.params.value)
     order.save()
 
@@ -127,20 +122,10 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     if (user === null) {
         return;
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.coreStakedInOrder = user.coreStakedInOrder.minus(event.params.value)
     let stakedInOrder = StakedInOrder.load(order.id + '-' + user.id)
     if (stakedInOrder === null) {
         return;
-    }
-    if (stakedInOrder.amount == event.params.value) {
-        let newStakedOrder: string[] = []
-        for (let i = 0; i < user.stakedOrder.length; i++) {
-            if (user.stakedOrder[i] != (stakedInOrder as StakedInOrder).id) {
-                newStakedOrder.push(user.stakedOrder[i]);
-            }
-        }
-        user.stakedOrder = newStakedOrder
     }
     stakedInOrder.amount = stakedInOrder.amount.minus(event.params.value)
     stakedInOrder.save()
@@ -154,7 +139,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = event.params.isBtcClaim ? "ClaimCoreForBTCHolder" : "ClaimCoreForCoreHolder"
 
-    orderAction.from = event.params.from;
+    orderAction.from = event.params.from.toHexString();
     orderAction.order = event.params.receiver.toHexString();
     orderAction.amount = event.params.amount;
 
@@ -172,13 +157,5 @@ export function handleClaimProxy(event: ClaimProxy): void {
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     order.save()
-
-    let user = User.load(event.params.from.toHexString());
-    if (user === null) {
-        return;
-    }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
-    user.save()
 }

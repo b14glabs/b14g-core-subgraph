@@ -11,9 +11,6 @@ export function createUser(id: string): User {
     let user = new User(id);
     user.dualCoreBalance = ZERO_BI
     user.coreStakedInOrder = ZERO_BI
-    user.orderActionActivities = []
-    user.vaultActionActivities = []
-    user.stakedOrder = [];
     user.save()
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -30,7 +27,6 @@ export function createUser(id: string): User {
 export function createVault(id: string): Vault {
     let vault = new Vault(id);
     vault.totalStaked = ZERO_BI
-    vault.activities = []
     vault.save()
     return vault;
 }
