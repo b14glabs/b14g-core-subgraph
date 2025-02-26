@@ -1,7 +1,7 @@
 import { VaultAction, User, Stats} from '../types/schema'
 import {createUser, DUAL_CORE_VAULT, getId} from "./helpers";
 import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault, ClaimReward} from "../types/CoreVault/CoreVault";
-import {Address, BigInt} from "@graphprotocol/graph-ts";
+import {Address, BigInt, Bytes} from "@graphprotocol/graph-ts";
 
 const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT))
 
@@ -11,9 +11,9 @@ export function handleStake(event: Stake): void {
     vaultAction.timestamp = event.block.timestamp;
     vaultAction.txHash = event.transaction.hash;
     vaultAction.type = "StakeCoreToVault"
-    vaultAction.from = event.params.user.toHexString();
+    vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.to = DUAL_CORE_VAULT.toLowerCase()
+    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -29,9 +29,9 @@ export function handleStake(event: Stake): void {
     stats.save()
     vaultAction.save()
 
-    let user = User.load(event.params.user.toHexString());
+    let user = User.load(event.params.user);
     if (user === null) {
-        user = createUser(event.params.user.toHexString());
+        user = createUser(event.params.user);
     }
 
 }
@@ -42,9 +42,9 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     vaultAction.timestamp = event.block.timestamp;
     vaultAction.txHash = event.transaction.hash;
     vaultAction.type = "RedeemInstantlyCoreFromVault"
-    vaultAction.from = event.params.user.toHexString();
+    vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.to = DUAL_CORE_VAULT.toLowerCase()
+    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -68,9 +68,9 @@ export function handleUnbond(event: Unbond): void {
     vaultAction.timestamp = event.block.timestamp;
     vaultAction.txHash = event.transaction.hash;
     vaultAction.type = "RedeemNormallyCoreFromVault"
-    vaultAction.from = event.params.user.toHexString();
+    vaultAction.from = event.params.user;
     vaultAction.amount = event.params.coreAmount;
-    vaultAction.to = DUAL_CORE_VAULT.toLowerCase()
+    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -92,9 +92,9 @@ export function handleStakeWithdraw(event: Withdraw): void {
     vaultAction.timestamp = event.block.timestamp;
     vaultAction.txHash = event.transaction.hash;
     vaultAction.type = "WithdrawCoreFromVault"
-    vaultAction.from = event.params.user.toHexString();
+    vaultAction.from = event.params.user;
     vaultAction.amount = event.params.amount;
-    vaultAction.to = DUAL_CORE_VAULT.toLowerCase()
+    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -111,9 +111,9 @@ export function handleReInvest(event: ReInvest): void {
     vaultAction.timestamp = event.block.timestamp;
     vaultAction.txHash = event.transaction.hash;
     vaultAction.type = "ReInvestVault"
-    vaultAction.from = event.transaction.from.toHexString();
+    vaultAction.from = event.transaction.from;
     vaultAction.amount = coreVaultContract.totalStaked();
-    vaultAction.to = DUAL_CORE_VAULT.toLowerCase()
+    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
     let stats = Stats.load("b14g");
     if (!stats) {
