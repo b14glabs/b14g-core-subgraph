@@ -1,10 +1,11 @@
+import { Bytes } from '@graphprotocol/graph-ts';
 import {Transfer as TransferEvent} from '../types/DualCoreToken/ERC20'
 import {DualCoreTransfer, Vault, User} from '../types/schema'
 import {ADDRESS_ZERO, createUser, createVault, DUAL_CORE_VAULT} from "./helpers";
 
 
 export function handleTransfer(event: TransferEvent): void {
-    let transfer = new DualCoreTransfer(event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString()));
+    let transfer = new DualCoreTransfer(event.transaction.hash.concatI32(event.logIndex.toI32()));
     transfer.transaction = event.transaction.hash;
     transfer.timestamp = event.block.timestamp
     transfer.amount = event.params.value;
@@ -12,15 +13,16 @@ export function handleTransfer(event: TransferEvent): void {
     transfer.to = event.params.to;
     transfer.save()
 
-    let vault = Vault.load(DUAL_CORE_VAULT)
+    let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
     if (vault === null) {
         vault = createVault(DUAL_CORE_VAULT);
     }
 
     if (event.params.from.toHexString() != ADDRESS_ZERO) {
-        let user = User.load(event.params.from.toHexString());
+        let user = User.load(event.params.from);
         if (user === null) {
-            user = createUser(event.params.from.toHexString());
+            user = createUser(event.params.from);    
+
         }
         user.dualCoreBalance = user.dualCoreBalance.minus(event.params.value)
         user.save()
@@ -28,10 +30,10 @@ export function handleTransfer(event: TransferEvent): void {
 
     }
     if (event.params.to.toHexString() != ADDRESS_ZERO) {
-        let user = User.load(event.params.to.toHexString());
+        let user = User.load(event.params.to);
 
         if (user === null) {
-            user = createUser(event.params.to.toHexString());
+            user = createUser(event.params.to);
         }
         user.dualCoreBalance = user.dualCoreBalance.plus(event.params.value)
         user.save()

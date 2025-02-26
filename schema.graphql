@@ -17,7 +17,7 @@ enum VaultActionType{
 
 
 type User @entity {
-    id: ID!
+    id: Bytes!
     dualCoreBalance: BigInt!
     coreStakedInOrder: BigInt!
     stakedOrder: [StakedInOrder!]! @derivedFrom(field: "user")
@@ -26,20 +26,20 @@ type User @entity {
 }
 type StakedInOrder @entity{
 
-    id: ID! #orderId+userId
+    id: Bytes! #orderId+userId
     amount: BigInt!
     user: User! 
 }
 
 type Vault @entity {
-    id: ID!
+    id: Bytes!
     totalStaked: BigInt!
     activities:[VaultAction!]! @derivedFrom(field: "to")
 }
 
 
 type Order @entity {
-    id: ID!
+    id: Bytes!
     owner: Bytes!
     btcAmount: BigInt
     unlockTime: Int
@@ -54,8 +54,8 @@ type Order @entity {
 
 
 
-type OrderAction @entity{
-    id: ID!
+type OrderAction @entity (immutable: true){
+    id: Bytes!
     txHash: Bytes!
     blockNumber: BigInt!
     timestamp: BigInt!
@@ -66,8 +66,8 @@ type OrderAction @entity{
     totalCoreStaked: BigInt!
 }
 
-type VaultAction @entity{
-    id: ID!
+type VaultAction @entity (immutable: true){
+    id: Bytes!
     txHash: Bytes!
     blockNumber: BigInt!
     timestamp: BigInt!
@@ -80,9 +80,9 @@ type VaultAction @entity{
 
 
 
-type DualCoreTransfer @entity {
+type DualCoreTransfer @entity (immutable: true){
     # transaction hash + "-" + index in mints Transaction array
-    id: ID!
+    id: Bytes!
     transaction: Bytes!
     timestamp: BigInt! # need this to pull recent txns for specific token or pair
     amount: BigInt
