@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/cicd
 
 jobs:
   subgraph-deploy:
@@ -26,8 +27,9 @@ jobs:
       - name: yarn install
         run: yarn install
 
+
       - name: Prepare
-        run: ./node_modules/@graphprotocol/graph-cli/bin/run codegen --output-dir src/types/
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js codegen --output-dir src/types/
 
       - name: Deploy
-        run: ./node_modules/@graphprotocol/graph-cli/bin/run deploy ${{ secrets.SUBGRAPH_NAME }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }} --version-label $GITHUB_REF_NAME
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js  deploy ${{ secrets.SUBGRAPH_NAME }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }} --version-label $GITHUB_REF_NAME
