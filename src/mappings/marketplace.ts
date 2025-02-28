@@ -3,6 +3,7 @@ import {ClaimProxy, CreateRewardReceiver, Marketplace, StakeCoreProxy} from '../
 import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
 import {createUser, getId, MARKETPLACE, ZERO_BI} from "./helpers";
 import {MARKETPLACE_STRATEGE_ADDRESS} from '../constant';
+
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE))
 
 
@@ -41,6 +42,8 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     order.btcEarned = ZERO_BI;
     order.fee = marketplace.fee()
     order.rewardSharingPortion = event.params.portion;
+    order.realtimeStakeAmount = ZERO_BI;
+    order.realtimeTier = ZERO_BI;
     // order.stakedAmount = new BigInt(0)
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])
@@ -71,9 +74,11 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
-    if (order === null) {
+    if (order === null || order.btcAmount === null) {
         return;
     }
+    order.realtimeStakeAmount = order.realtimeStakeAmount.plus(event.params.value);
+    order.realtimeTier = order.realtimeStakeAmount.div(order.btcAmount as BigInt);
     // order.stakedAmount = order.stakedAmount.plus(event.params.value)
     order.save()
 
@@ -117,10 +122,11 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
-    if (order === null) {
+    if (order === null || order.btcAmount === null) {
         return;
     }
-    // order.stakedAmount = order.stakedAmount.minus(event.params.value)
+    order.realtimeStakeAmount = order.realtimeStakeAmount.minus(event.params.value);
+    order.realtimeTier = order.realtimeStakeAmount.div(order.btcAmount as BigInt);
     order.save()
 
     let user = User.load(event.params.from);

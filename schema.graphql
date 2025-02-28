@@ -50,6 +50,8 @@ type Order @entity {
     btcEarned: BigInt!
     coreEarned: BigInt!
 
+    realtimeTier: BigInt!
+    realtimeStakeAmount: BigInt!
     # creation stats
     createdAtTimestamp: BigInt!
     createdAtBlockNumber: BigInt!
