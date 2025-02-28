@@ -34,6 +34,7 @@ type StakedInOrder @entity{
 type Vault @entity {
     id: Bytes!
     totalStaked: BigInt!
+    totalActions: Int!
     activities:[VaultAction!]! @derivedFrom(field: "to")
 }
 
@@ -46,6 +47,7 @@ type Order @entity {
     validator: Bytes
 
     # creation stats
+    totalActions: Int!
     createdAtTimestamp: BigInt!
     createdAtBlockNumber: BigInt!
     activities:[OrderAction!]! @derivedFrom(field: "order")
@@ -95,6 +97,7 @@ type Stats @entity {
   id: ID!
   totalStaker: Int!
   totalCoreStaked: BigInt!
+  totalDualCore: BigInt!
 #   totalBtcStaked: BigInt!
 #   listOrder: [Order!]!
 }
