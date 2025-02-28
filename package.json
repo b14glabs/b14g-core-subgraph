@@ -11,13 +11,13 @@
     "codegen": "graph codegen --output-dir src/types/",
     "create-local": "graph create b14g-core-subgraph --node http://127.0.0.1:8020",
     "create": "graph create b14g-core-subgraph --node https://thegraph.coredao.org/deploy/ --access-token=",
-    "deploy-local": "graph deploy b14g-core-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy-local": "graph deploy b14g-core-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020 --version-label v0.0.1",
     "deploy": "graph deploy b14g-core-subgraph --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token=",
-    "watch-local": "graph deploy b14g-core-subgraph --watch --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"
+    "watch-local": "graph deploy b14g-core-subgraph --watch --node http://127.0.0.1:8020/ --ipfs http://localhost:5001 --version-label v0.0.1"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^3.0.7",
-    "@graphprotocol/graph-cli": "^0.64.1",
+    "@graphprotocol/graph-cli": "^0.96.0",
     "@graphprotocol/graph-ts": "^0.32.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
