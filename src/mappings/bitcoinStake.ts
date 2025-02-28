@@ -10,5 +10,6 @@ export function handleBTCStaked(event: delegated): void {
     order.btcAmount = event.params.amount;
     order.unlockTime = bitcoinStake.btcTxMap(event.params.txid).getLockTime().toU32()
     order.validator = event.params.candidate
+    order.bitcoinLockTx = event.params.txid
     order.save()
 }
