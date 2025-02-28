@@ -28,7 +28,7 @@ type StakedInOrder @entity{
 
     id: Bytes! #orderId+userId
     amount: BigInt!
-    user: User! 
+    user: User!
 }
 
 type Vault @entity {
@@ -44,6 +44,11 @@ type Order @entity {
     btcAmount: BigInt
     unlockTime: Int
     validator: Bytes
+    bitcoinLockTx: Bytes
+    fee: BigInt!
+    rewardSharingPortion: BigInt!
+    btcEarned: BigInt!
+    coreEarned: BigInt!
 
     # creation stats
     createdAtTimestamp: BigInt!
@@ -92,9 +97,10 @@ type DualCoreTransfer @entity (immutable: true){
 }
 
 type Stats @entity {
-  id: ID!
-  totalStaker: Int!
-  totalCoreStaked: BigInt!
-#   totalBtcStaked: BigInt!
-#   listOrder: [Order!]!
+    id: ID!
+    totalStaker: Int!
+    totalCoreStaked: BigInt!
+    #   totalBtcStaked: BigInt!
+    #   listOrder: [Order!]!
+    totalEarned: BigInt!
 }
