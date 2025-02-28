@@ -13,7 +13,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "CreateOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.rewardReceiver.toHexString();
+    orderAction.order = event.params.rewardReceiver;
 
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -26,18 +26,16 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
-    let user = User.load(event.params.from.toHexString());
+    let user = User.load(event.params.from);
     if (user === null) {
-        user = createUser(event.params.from.toHexString());
+        user = createUser(event.params.from);
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.save()
 
-    let order = new Order(event.params.rewardReceiver.toHexString()) as Order
+    let order = new Order(event.params.rewardReceiver) as Order
     order.owner = event.params.from;
     order.createdAtTimestamp = event.block.timestamp;
     order.createdAtBlockNumber = event.block.number;
-    order.activities = [orderAction.id]
     // order.stakedAmount = new BigInt(0)
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])
@@ -52,7 +50,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "StakeCoreToOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver.toHexString();
+    orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -67,25 +65,23 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
-    let order = Order.load(event.params.receiver.toHexString())
+    let order = Order.load(event.params.receiver)
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     // order.stakedAmount = order.stakedAmount.plus(event.params.value)
     order.save()
 
-    let user = User.load(event.params.from.toHexString());
+    let user = User.load(event.params.from);
     if (user === null) {
-        user = createUser(event.params.from.toHexString());
+        user = createUser(event.params.from);
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.coreStakedInOrder = user.coreStakedInOrder.plus(event.params.value)
-    let stakedInOrder = StakedInOrder.load(order.id + '-' + user.id)
+    let stakedInOrder = StakedInOrder.load(order.id.concat(user.id))
     if (stakedInOrder === null) {
-        stakedInOrder = new StakedInOrder(order.id + '-' + user.id)
+        stakedInOrder = new StakedInOrder(order.id.concat(user.id))
         stakedInOrder.amount = event.params.value;
-        user.stakedOrder = user.stakedOrder.concat([stakedInOrder.id])
+        stakedInOrder.user = event.params.from
     } else {
         stakedInOrder.amount = stakedInOrder.amount.plus(event.params.value)
     }
@@ -101,7 +97,7 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.txHash = event.transaction.hash;
     orderAction.type = "WithdrawCoreFromOrder"
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver.toHexString();
+    orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
     let stats = Stats.load("b14g");
     if (!stats) {
@@ -115,32 +111,21 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
-    let order = Order.load(event.params.receiver.toHexString())
+    let order = Order.load(event.params.receiver)
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     // order.stakedAmount = order.stakedAmount.minus(event.params.value)
     order.save()
 
-    let user = User.load(event.params.from.toHexString());
+    let user = User.load(event.params.from);
     if (user === null) {
         return;
     }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
     user.coreStakedInOrder = user.coreStakedInOrder.minus(event.params.value)
-    let stakedInOrder = StakedInOrder.load(order.id + '-' + user.id)
+    let stakedInOrder = StakedInOrder.load(order.id.concat(user.id))
     if (stakedInOrder === null) {
         return;
-    }
-    if (stakedInOrder.amount == event.params.value) {
-        let newStakedOrder: string[] = []
-        for (let i = 0; i < user.stakedOrder.length; i++) {
-            if (user.stakedOrder[i] != (stakedInOrder as StakedInOrder).id) {
-                newStakedOrder.push(user.stakedOrder[i]);
-            }
-        }
-        user.stakedOrder = newStakedOrder
     }
     stakedInOrder.amount = stakedInOrder.amount.minus(event.params.value)
     stakedInOrder.save()
@@ -155,7 +140,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.type = event.params.isBtcClaim ? "ClaimCoreForBTCHolder" : "ClaimCoreForCoreHolder"
 
     orderAction.from = event.params.from;
-    orderAction.order = event.params.receiver.toHexString();
+    orderAction.order = event.params.receiver;
     orderAction.amount = event.params.amount;
 
     let stats = Stats.load("b14g");
@@ -168,17 +153,9 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
 
-    let order = Order.load(event.params.receiver.toHexString())
+    let order = Order.load(event.params.receiver)
     if (order === null) {
         return;
     }
-    order.activities = order.activities.concat([orderAction.id])
     order.save()
-
-    let user = User.load(event.params.from.toHexString());
-    if (user === null) {
-        return;
-    }
-    user.orderActionActivities = user.orderActionActivities.concat([orderAction.id])
-    user.save()
 }
