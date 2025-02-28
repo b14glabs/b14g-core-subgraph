@@ -1,7 +1,8 @@
 import { VaultAction, User, Stats} from '../types/schema'
-import {createUser, DUAL_CORE_VAULT, getId} from "./helpers";
+import {createUser, DUAL_CORE_VAULT, getId, ZERO_BI} from "./helpers";
 import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault, ClaimReward} from "../types/CoreVault/CoreVault";
 import {Address, BigInt, Bytes} from "@graphprotocol/graph-ts";
+import { B14G_ID } from './helpers';
 
 const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT))
 
@@ -15,11 +16,11 @@ export function handleStake(event: Stake): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
-      stats = new Stats("b14g");
+      stats = new Stats(B14G_ID);
       stats.totalStaker = 0;
-      stats.totalCoreStaked = new BigInt(0);
+      stats.totalCoreStaked = ZERO_BI;
     }
     stats.totalCoreStaked = stats.totalCoreStaked.plus(
       event.params.coreAmount
@@ -46,7 +47,7 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
       return
     }
@@ -72,7 +73,7 @@ export function handleUnbond(event: Unbond): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
       return
     }
@@ -96,7 +97,7 @@ export function handleStakeWithdraw(event: Withdraw): void {
     vaultAction.amount = event.params.amount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
       return
     }
@@ -115,7 +116,7 @@ export function handleReInvest(event: ReInvest): void {
     vaultAction.amount = coreVaultContract.totalStaked();
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
       return
     }
@@ -125,7 +126,7 @@ export function handleReInvest(event: ReInvest): void {
 }
 
 export function handleClaimReward(event: ClaimReward): void {
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
       return
     }
