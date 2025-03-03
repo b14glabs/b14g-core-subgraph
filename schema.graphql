@@ -32,32 +32,41 @@ type StakedInOrder @entity{
 }
 
 type Vault @entity {
-    id: Bytes!
-    totalStaked: BigInt!
-    totalActions: Int!
-    activities:[VaultAction!]! @derivedFrom(field: "to")
+  id: Bytes!
+  totalStaked: BigInt!
+  totalActions: Int!
+  totalDepositActions: Int!
+  totalUnbondActions: Int!
+  totalInstantRedeemActions: Int!
+  totalWithdrawActions: Int!
+  totalReInvestActions: Int!
+  activities: [VaultAction!]! @derivedFrom(field: "to")
 }
 
-
 type Order @entity {
-    id: Bytes!
-    owner: Bytes!
-    btcAmount: BigInt
-    unlockTime: Int
-    validator: Bytes
-    bitcoinLockTx: Bytes
-    fee: BigInt!
-    rewardSharingPortion: BigInt!
-    btcEarned: BigInt!
-    coreEarned: BigInt!
+  id: Bytes!
+  owner: Bytes!
+  btcAmount: BigInt
+  unlockTime: Int
+  validator: Bytes
+  bitcoinLockTx: Bytes
+  fee: BigInt!
+  rewardSharingPortion: BigInt!
+  btcEarned: BigInt!
+  coreEarned: BigInt!
 
-    realtimeTier: BigInt!
-    realtimeStakeAmount: BigInt!
-    # creation stats
-    totalActions: Int!
-    createdAtTimestamp: BigInt!
-    createdAtBlockNumber: BigInt!
-    activities:[OrderAction!]! @derivedFrom(field: "order")
+  realtimeTier: BigInt!
+  realtimeStakeAmount: BigInt!
+  # creation stats
+  totalActions: Int!
+  totalStakeActions: Int!
+  totalWithdrawActions: Int!
+  totalClaimCoreActions: Int!
+  totalClaimBtcActions: Int!
+
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
+  activities: [OrderAction!]! @derivedFrom(field: "order")
 }
 
 
