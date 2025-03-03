@@ -44,6 +44,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     order.rewardSharingPortion = event.params.portion;
     order.realtimeStakeAmount = ZERO_BI;
     order.realtimeTier = ZERO_BI;
+    order.rewardRate = ZERO_BI;
     // order.stakedAmount = new BigInt(0)
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])

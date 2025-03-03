@@ -1,6 +1,7 @@
 import {Address} from '@graphprotocol/graph-ts'
-import {Order} from '../types/schema'
+import {Order, Stats} from '../types/schema'
 import {BitcoinStake, delegated} from "../types/BitcoinStake/BitcoinStake";
+import {B14G_ID} from "./helpers";
 
 let bitcoinStake = BitcoinStake.bind(Address.fromString("0x0000000000000000000000000000000000001014"))
 
@@ -12,4 +13,9 @@ export function handleBTCStaked(event: delegated): void {
     order.validator = event.params.candidate
     order.bitcoinLockTx = event.params.txid
     order.save()
+
+    let stats = Stats.load(B14G_ID)
+    if (stats === null) return;
+    stats.listOrder = stats.listOrder.concat([event.params.delegator]);
+    stats.save()
 }

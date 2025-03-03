@@ -1,0 +1,751 @@
+[
+  {
+    "inputs": [
+      {
+        "name": "name",
+        "internalType": "string",
+        "type": "string"
+      }
+    ],
+    "name": "MismatchParamLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "name": "name",
+        "internalType": "string",
+        "type": "string"
+      },
+      {
+        "name": "given",
+        "internalType": "uint256",
+        "type": "uint256"
+      },
+      {
+        "name": "lowerBound",
+        "internalType": "uint256",
+        "type": "uint256"
+      },
+      {
+        "name": "upperBound",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "OutOfBounds",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "name": "key",
+        "internalType": "string",
+        "type": "string"
+      }
+    ],
+    "name": "UnsupportedGovParam",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "relayer",
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimedRelayerReward",
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "delegator",
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimedReward",
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "key",
+        "internalType": "string",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "value",
+        "internalType": "bytes",
+        "type": "bytes"
+      }
+    ],
+    "name": "paramChange",
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "from",
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "received",
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "name",
+        "internalType": "string",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "round",
+        "internalType": "uint256",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "validator",
+        "internalType": "address[]",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "internalType": "uint256[]",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "roundReward",
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "BTCLST_STAKE_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "BTCLST_TOKEN_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "BTC_AGENT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "BTC_STAKE_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "BURN_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "CANDIDATE_HUB_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "CORE_AGENT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "FOUNDATION_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "GOV_HUB_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "HASH_AGENT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "LIGHT_CLIENT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "PLEDGE_AGENT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "RELAYER_HUB_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "SLASH_CONTRACT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "STAKE_HUB_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "SYSTEM_REWARD_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "inputs": [],
+    "name": "VALIDATOR_CONTRACT_ADDR",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [
+      {
+        "name": "validators",
+        "internalType": "address[]",
+        "type": "address[]"
+      },
+      {
+        "name": "rewardList",
+        "internalType": "uint256[]",
+        "type": "uint256[]"
+      },
+      {
+        "name": "roundTag",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "addRoundReward",
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "bool",
+        "type": "bool"
+      }
+    ],
+    "inputs": [],
+    "name": "alreadyInit",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "name",
+        "internalType": "string",
+        "type": "string"
+      },
+      {
+        "name": "agent",
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "name": "hardcap",
+        "internalType": "uint32",
+        "type": "uint32"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "assets",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [
+      {
+        "name": "delegator",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "calculateReward",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "candidateScoresMap",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "rewards",
+        "internalType": "uint256[]",
+        "type": "uint256[]"
+      }
+    ],
+    "inputs": [],
+    "name": "claimReward",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "changeRound",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "delegatorMap",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "name",
+            "internalType": "string",
+            "type": "string"
+          },
+          {
+            "name": "agent",
+            "internalType": "address",
+            "type": "address"
+          },
+          {
+            "name": "hardcap",
+            "internalType": "uint32",
+            "type": "uint32"
+          }
+        ],
+        "name": "",
+        "internalType": "struct StakeHub.Asset[]",
+        "type": "tuple[]"
+      }
+    ],
+    "inputs": [],
+    "name": "getAssets",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "uint256[]",
+        "type": "uint256[]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "candidate",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "getCandidateScores",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "changeRound",
+            "internalType": "uint256",
+            "type": "uint256"
+          },
+          {
+            "name": "rewards",
+            "internalType": "uint256[]",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "",
+        "internalType": "struct StakeHub.Delegator",
+        "type": "tuple"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "delegator",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "getDelegator",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "scores",
+        "internalType": "uint256[]",
+        "type": "uint256[]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "candidates",
+        "internalType": "address[]",
+        "type": "address[]"
+      },
+      {
+        "name": "round",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "getHybridScore",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [],
+    "name": "init",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [
+      {
+        "name": "delegator",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "onStakeChange",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "bool",
+        "type": "bool"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "operators",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "reward",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "delegator",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "proxyClaimReward",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [
+      {
+        "name": "validators",
+        "internalType": "address[]",
+        "type": "address[]"
+      },
+      {
+        "name": "round",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "setNewRound",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "amount",
+        "internalType": "uint256",
+        "type": "uint256"
+      },
+      {
+        "name": "factor",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "",
+        "internalType": "address",
+        "type": "address"
+      }
+    ],
+    "name": "stateMap",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [
+      {
+        "name": "",
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "inputs": [],
+    "name": "surplus",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "outputs": [],
+    "inputs": [
+      {
+        "name": "key",
+        "internalType": "string",
+        "type": "string"
+      },
+      {
+        "name": "value",
+        "internalType": "bytes",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateParam",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]

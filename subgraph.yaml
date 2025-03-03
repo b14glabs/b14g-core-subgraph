@@ -1,4 +1,4 @@
-specVersion: 0.0.4
+specVersion: 1.2.0
 description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
@@ -99,3 +99,47 @@ dataSources:
           handler: handleStakeWithdraw
         - event: ClaimReward(uint256,uint256)
           handler: handleClaimReward
+  - kind: ethereum/contract
+    name: ValidatorSet
+    network: core
+    source:
+      address: '0x0000000000000000000000000000000000001000'
+      abi: ValidatorSet
+      startBlock: 22523398
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/validatorSet.ts
+      entities:
+        - Order
+      abis:
+        - name: ValidatorSet
+          file: ./abis/validatorSet.json
+      eventHandlers:
+        - event: validatorDeposit(indexed address,uint256)
+          handler: handleValidatorDeposit
+  - kind: ethereum/contract
+    name: CandidateHub
+    network: core
+    source:
+      address: '0x0000000000000000000000000000000000001005'
+      abi: CandidateHub
+      startBlock: 22523398
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/candidateHub.ts
+      entities:
+        - Order
+      abis:
+        - name: CandidateHub
+          file: ./abis/candidateHub.json
+        - name: ValidatorSet
+          file: ./abis/validatorSet.json
+      eventHandlers:
+        - event: turnedRound(uint256)
+          handler: handleTurnedRound
+          calls:
+            Validator.getListValidator: ValidatorSet[0x0000000000000000000000000000000000001000].getValidators()

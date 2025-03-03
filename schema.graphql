@@ -50,6 +50,7 @@ type Order @entity {
     btcEarned: BigInt!
     coreEarned: BigInt!
 
+    rewardRate: BigInt!
     realtimeTier: BigInt!
     realtimeStakeAmount: BigInt!
     # creation stats
@@ -103,6 +104,19 @@ type Stats @entity {
     totalStaker: Int!
     totalCoreStaked: BigInt!
     #   totalBtcStaked: BigInt!
-    #   listOrder: [Order!]!
+    listOrder: [Order!]!
     totalEarned: BigInt!
+}
+
+type Validator @entity {
+    id: Bytes!
+    income: BigInt!
+    increasingCount: Int!
+}
+
+type ListValidator @entity {
+    id: ID!
+    validators: [Validator!]!
+    blockPerValidatorInRound: Int!
+    round: BigInt!
 }
