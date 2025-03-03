@@ -1,7 +1,7 @@
 import {Address, BigInt} from '@graphprotocol/graph-ts'
 import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy,Marketplace} from '../types/Marketplace/Marketplace'
 import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
-import {createUser, getId,ZERO_BI,B14G_ID,MARKETPLACE,ORDER_ACTION} from "./helpers";
+import {createUser, getId, ZERO_BI, B14G_ID, MARKETPLACE, ORDER_ACTION, handleOrderAction} from "./helpers";
 
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE))
 
