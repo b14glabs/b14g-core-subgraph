@@ -16,7 +16,12 @@ export function handleStake(event: Stake): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    vaultAction.totalCoreStaked = handleVaultAction(event.params.coreAmount, event.params.dualCoreAmount, true)
+    vaultAction.totalCoreStaked = handleVaultAction(
+      event.params.coreAmount,
+      event.params.dualCoreAmount,
+      true,
+      false
+    );
     vaultAction.save()
 
     let user = User.load(event.params.user);
@@ -36,7 +41,12 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    vaultAction.totalCoreStaked = handleVaultAction(event.params.coreAmount.plus(event.params.fee), event.params.dualCoreAmount, false)
+    vaultAction.totalCoreStaked = handleVaultAction(
+      event.params.coreAmount.plus(event.params.fee),
+      event.params.dualCoreAmount,
+      false,
+      false
+    );
 
     vaultAction.save()
 
@@ -53,53 +63,60 @@ export function handleUnbond(event: Unbond): void {
     vaultAction.amount = event.params.coreAmount;
     vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
 
-    vaultAction.totalCoreStaked = handleVaultAction(event.params.coreAmount, event.params.dualCoreAmount, false)
+    vaultAction.totalCoreStaked = handleVaultAction(
+      event.params.coreAmount,
+      event.params.dualCoreAmount,
+      false,
+      true
+    );
     vaultAction.save()
 
 }
 
 export function handleStakeWithdraw(event: Withdraw): void {
-    let vaultAction = new VaultAction(getId(event))
-    vaultAction.blockNumber = event.block.number;
-    vaultAction.timestamp = event.block.timestamp;
-    vaultAction.txHash = event.transaction.hash;
-    vaultAction.type = "WithdrawCoreFromVault"
-    vaultAction.from = event.params.user;
-    vaultAction.amount = event.params.amount;
-    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
+  let vaultAction = new VaultAction(getId(event));
+  vaultAction.blockNumber = event.block.number;
+  vaultAction.timestamp = event.block.timestamp;
+  vaultAction.txHash = event.transaction.hash;
+  vaultAction.type = "WithdrawCoreFromVault";
+  vaultAction.from = event.params.user;
+  vaultAction.amount = event.params.amount;
+  vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase());
 
-    let stats = Stats.load(B14G_ID);
-    let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
-    if (!stats || !vault) {
-      return
-    }
-    vaultAction.totalCoreStaked = stats.totalCoreStaked
-    vaultAction.save()
+  let stats = Stats.load(B14G_ID);
+  let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()));
+  if (!stats || !vault) {
+    return;
+  }
+  vaultAction.totalCoreStaked = stats.totalCoreStaked;
+  vaultAction.save();
 
-    vault.totalActions += 1
-    vault.save()
+  vault.totalWithdrawActions += 1;
+  vault.totalActions += 1;
+  vault.save();
 }
 
 export function handleReInvest(event: ReInvest): void {
-    let vaultAction = new VaultAction(getId(event))
-    vaultAction.blockNumber = event.block.number;
-    vaultAction.timestamp = event.block.timestamp;
-    vaultAction.txHash = event.transaction.hash;
-    vaultAction.type = "ReInvestVault"
-    vaultAction.from = event.transaction.from;
-    vaultAction.amount = coreVaultContract.totalStaked();
-    vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
+  let vaultAction = new VaultAction(getId(event));
+  vaultAction.blockNumber = event.block.number;
+  vaultAction.timestamp = event.block.timestamp;
+  vaultAction.txHash = event.transaction.hash;
+  vaultAction.type = "ReInvestVault";
+  vaultAction.from = event.transaction.from;
+  vaultAction.amount = coreVaultContract.totalStaked();
+  vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase());
 
-    let stats = Stats.load(B14G_ID);
-    let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
-    if (!stats || !vault) {
-      return
-    }
-    vaultAction.totalCoreStaked = stats.totalCoreStaked
-    vaultAction.save()
+  let stats = Stats.load(B14G_ID);
+  let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()));
+  if (!stats || !vault) {
+    return;
+  }
+  vaultAction.totalCoreStaked = stats.totalCoreStaked;
+  vaultAction.save();
 
-    vault.totalActions += 1
-    vault.save()
+  vault.totalReInvestActions += 1;
+  vault.totalActions += 1;
+  vault.save();
 }
 
 export function handleClaimReward(event: ClaimReward): void {
