@@ -1,8 +1,9 @@
-
-import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy} from '../types/Marketplace/Marketplace'
+import {Address, BigInt} from '@graphprotocol/graph-ts'
+import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy, Marketplace} from '../types/Marketplace/Marketplace'
 import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
-import {ORDER_ACTION, ZERO_BI, createUser, getId, handleOrderAction} from "./helpers";
-import { B14G_ID, } from './helpers';
+import {createUser, getId, ZERO_BI, B14G_ID, MARKETPLACE, ORDER_ACTION, handleOrderAction} from "./helpers";
+
+let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE))
 
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
@@ -17,13 +18,14 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
 
     let stats = Stats.load(B14G_ID);
     if (!stats) {
-      stats = new Stats(B14G_ID);
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = ZERO_BI;
-      stats.totalDualCore = ZERO_BI
-      stats.save()
-    //   stats.totalEarned = ZERO_BI
-    //   stats.listOrder = []
+        stats = new Stats(B14G_ID);
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = ZERO_BI;
+        stats.totalDualCore = ZERO_BI
+        stats.totalEarned = ZERO_BI;
+        stats.save()
+        //   stats.totalEarned = ZERO_BI
+        //   stats.listOrder = []
     }
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
@@ -38,8 +40,14 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     order.owner = event.params.from;
     order.createdAtTimestamp = event.block.timestamp;
     order.createdAtBlockNumber = event.block.number;
+    order.coreEarned = ZERO_BI;
+    order.btcEarned = ZERO_BI;
+    order.fee = marketplace.fee()
+    order.rewardSharingPortion = event.params.portion;
+    order.realtimeStakeAmount = ZERO_BI;
+    order.realtimeTier = ZERO_BI;
+    // order.stakedAmount = new BigInt(0)
     order.totalActions = 1
-    // order.stakedAmount = ZERO_BI
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])
 
@@ -60,9 +68,11 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
-    if (order === null) {
+    if (order === null || order.btcAmount === null) {
         return;
     }
+    order.realtimeStakeAmount = order.realtimeStakeAmount.plus(event.params.value);
+    order.realtimeTier = order.realtimeStakeAmount.div(order.btcAmount as BigInt);
     // order.stakedAmount = order.stakedAmount.plus(event.params.value)
     order.save()
 
@@ -98,10 +108,11 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
-    if (order === null) {
+    if (order === null || order.btcAmount === null) {
         return;
     }
-    // order.stakedAmount = order.stakedAmount.minus(event.params.value)
+    order.realtimeStakeAmount = order.realtimeStakeAmount.minus(event.params.value);
+    order.realtimeTier = order.realtimeStakeAmount.div(order.btcAmount as BigInt);
     order.save()
 
     let user = User.load(event.params.from);
@@ -129,12 +140,27 @@ export function handleClaimProxy(event: ClaimProxy): void {
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.amount;
 
+    let stats = Stats.load("b14g");
+    if (!stats) {
+        stats = new Stats("b14g");
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = new BigInt(0);
+        stats.totalEarned = ZERO_BI;
+        // stats.listOrder = []
+    }
+    stats.totalEarned = stats.totalEarned.plus(event.params.amount);
+    stats.save()
     orderAction.totalCoreStaked = handleOrderAction(ZERO_BI, event.params.receiver, event.params.from, ORDER_ACTION.CLAIM)
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
     if (order === null) {
         return;
+    }
+    if (event.params.isBtcClaim) {
+        order.btcEarned = order.btcEarned.plus(event.params.amount)
+    } else {
+        order.coreEarned = order.coreEarned.plus(event.params.amount)
     }
     order.save()
 }

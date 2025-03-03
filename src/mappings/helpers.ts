@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 import {BigInt, Bytes, ethereum} from '@graphprotocol/graph-ts'
-import { Order, Stats, User, Vault } from "../types/schema";
+import {Order, Stats, User, Vault} from "../types/schema";
 
-export enum ORDER_ACTION  {
+export enum ORDER_ACTION {
     STAKE,
     WITHDRAW,
     CLAIM
@@ -13,6 +13,7 @@ export let ZERO_BI = BigInt.fromI32(0)
 export const DUAL_CORE_VAULT = "0xee21ab613d30330823D35Cf91A84cE964808B83F"
 export const MARKETPLACE_STRATEGY_ADDRESS = '0xcd6D74b6852FbeEb1187ec0E231aB91E700eC3BA'
 export const B14G_ID = 'b14g'
+export const MARKETPLACE = "0x04EA61C431F7934d51fEd2aCb2c5F942213f8967"
 
 export function createUser(id: Bytes): User {
     let user = new User(id);
@@ -21,11 +22,12 @@ export function createUser(id: Bytes): User {
     user.save()
     let stats = Stats.load(B14G_ID);
     if (!stats) {
-      stats = new Stats(B14G_ID);
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = ZERO_BI;
-      stats.totalDualCore = ZERO_BI
-    //   stats.listOrder = []
+        stats = new Stats(B14G_ID);
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = ZERO_BI;
+        stats.totalDualCore = ZERO_BI
+        stats.totalEarned = ZERO_BI;
+        //   stats.listOrder = []
     }
     stats.totalStaker += 1;
     stats.save();
@@ -47,10 +49,10 @@ export function getId(event: ethereum.Event): Bytes {
 export function handleVaultAction(coreAmount: BigInt, dualCoreAmount: BigInt, isStake: boolean): BigInt {
     let stats = Stats.load(B14G_ID);
     let vault = Vault.load(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
-    if (!stats ) {
-      return ZERO_BI
+    if (!stats) {
+        return ZERO_BI
     }
-    if( !vault) {
+    if (!vault) {
         vault = createVault(DUAL_CORE_VAULT.toLowerCase())
     }
     if (isStake) {
@@ -74,7 +76,7 @@ export function handleOrderAction(coreAmount: BigInt, orderId: Bytes, user: Byte
         return ZERO_BI
     }
 
-    if(type == ORDER_ACTION.CLAIM) {
+    if (type == ORDER_ACTION.CLAIM) {
         order.totalActions += 1
         order.save()
         return stats.totalCoreStaked
@@ -86,7 +88,7 @@ export function handleOrderAction(coreAmount: BigInt, orderId: Bytes, user: Byte
                 stats.totalCoreStaked = stats.totalCoreStaked.minus(coreAmount)
             }
         }
-        order.totalActions +=1
+        order.totalActions += 1
         order.save()
         stats.save()
 
