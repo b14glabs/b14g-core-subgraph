@@ -1,8 +1,7 @@
 import {Address, BigInt} from '@graphprotocol/graph-ts'
-import {ClaimProxy, CreateRewardReceiver, Marketplace, StakeCoreProxy} from '../types/Marketplace/Marketplace'
+import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy,Marketplace} from '../types/Marketplace/Marketplace'
 import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
-import {createUser, getId, MARKETPLACE, ZERO_BI} from "./helpers";
-import {MARKETPLACE_STRATEGE_ADDRESS} from '../constant';
+import {createUser, getId,ZERO_BI,B14G_ID,MARKETPLACE,ORDER_ACTION} from "./helpers";
 
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE))
 
@@ -17,13 +16,15 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.rewardReceiver;
 
-    let stats = Stats.load("b14g");
+    let stats = Stats.load(B14G_ID);
     if (!stats) {
-        stats = new Stats("b14g");
-        stats.totalStaker = 0;
-        stats.totalCoreStaked = new BigInt(0);
-        //   stats.totalEarned = new BigInt(0)
-        //   stats.listOrder = []
+      stats = new Stats(B14G_ID);
+      stats.totalStaker = 0;
+      stats.totalCoreStaked = ZERO_BI;
+      stats.totalDualCore = ZERO_BI
+      stats.save()
+    //   stats.totalEarned = ZERO_BI
+    //   stats.listOrder = []
     }
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
@@ -45,6 +46,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     order.realtimeStakeAmount = ZERO_BI;
     order.realtimeTier = ZERO_BI;
     // order.stakedAmount = new BigInt(0)
+    order.totalActions = 1
     order.save()
     // stats.listOrder = stats.listOrder.concat([order.id])
 
@@ -60,17 +62,8 @@ export function handleUserStake(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
-    let stats = Stats.load("b14g");
-    if (!stats) {
-        return
-    }
-    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
-        stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.value);
 
-        stats.save();
-    }
-
-    orderAction.totalCoreStaked = stats.totalCoreStaked
+    orderAction.totalCoreStaked = handleOrderAction(event.params.value, event.params.receiver, event.params.from, ORDER_ACTION.STAKE)
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
@@ -109,16 +102,8 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     orderAction.from = event.params.from;
     orderAction.order = event.params.receiver;
     orderAction.amount = event.params.value;
-    let stats = Stats.load("b14g");
-    if (!stats) {
-        return
-    }
-    if (event.params.from.toHexString().toLowerCase() != MARKETPLACE_STRATEGE_ADDRESS.toLowerCase()) {
-        stats.totalCoreStaked = stats.totalCoreStaked.minus(event.params.value);
 
-        stats.save();
-    }
-    orderAction.totalCoreStaked = stats.totalCoreStaked
+    orderAction.totalCoreStaked = handleOrderAction(event.params.value, event.params.receiver, event.params.from, ORDER_ACTION.WITHDRAW)
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
@@ -164,7 +149,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     }
     stats.totalEarned = stats.totalEarned.plus(event.params.amount);
     stats.save()
-    orderAction.totalCoreStaked = stats.totalCoreStaked
+    orderAction.totalCoreStaked = handleOrderAction(ZERO_BI, event.params.receiver, event.params.from, ORDER_ACTION.CLAIM)
     orderAction.save()
 
     let order = Order.load(event.params.receiver)
