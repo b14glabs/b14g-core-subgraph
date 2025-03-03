@@ -1,5 +1,5 @@
 import {Address, BigInt} from '@graphprotocol/graph-ts'
-import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy,Marketplace} from '../types/Marketplace/Marketplace'
+import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy, Marketplace} from '../types/Marketplace/Marketplace'
 import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
 import {createUser, getId, ZERO_BI, B14G_ID, MARKETPLACE, ORDER_ACTION, handleOrderAction} from "./helpers";
 
@@ -18,13 +18,14 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
 
     let stats = Stats.load(B14G_ID);
     if (!stats) {
-      stats = new Stats(B14G_ID);
-      stats.totalStaker = 0;
-      stats.totalCoreStaked = ZERO_BI;
-      stats.totalDualCore = ZERO_BI
-      stats.save()
-    //   stats.totalEarned = ZERO_BI
-    //   stats.listOrder = []
+        stats = new Stats(B14G_ID);
+        stats.totalStaker = 0;
+        stats.totalCoreStaked = ZERO_BI;
+        stats.totalDualCore = ZERO_BI
+        stats.totalEarned = ZERO_BI;
+        stats.save()
+        //   stats.totalEarned = ZERO_BI
+        //   stats.listOrder = []
     }
     orderAction.totalCoreStaked = stats.totalCoreStaked
     orderAction.save()
