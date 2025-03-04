@@ -21,6 +21,17 @@ export function createUser(id: Bytes): User {
   let user = new User(id);
   user.dualCoreBalance = ZERO_BI;
   user.coreStakedInOrder = ZERO_BI;
+  user.totalVaultAction = 0;
+  user.totalUnbondAction = 0;
+  user.totalDepositAction = 0;
+  user.totalVaultWithdrawAction = 0;
+  user.totalInstantRedeemAction = 0;
+
+  user.totalOrderAction = 0;
+  user.totalStakeAction = 0;
+  user.totalWithdrawAction = 0;
+  user.totalClaimBtcAction = 0;
+  user.totalClaimCoreAction = 0;
   user.save();
   let stats = Stats.load(B14G_ID);
   if (!stats) {
