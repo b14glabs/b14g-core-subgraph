@@ -111,28 +111,33 @@ export function handleOrderAction(
     order.save();
     return stats.totalCoreStaked;
   } else {
-    if (
-      user.toHexString().toLowerCase() !=
-      MARKETPLACE_STRATEGY_ADDRESS.toLowerCase()
-    ) {
-      if (type == ORDER_ACTION.STAKE) {
+    
+    if (type == ORDER_ACTION.STAKE) {
+      if (
+        user.toHexString().toLowerCase() !=
+        MARKETPLACE_STRATEGY_ADDRESS.toLowerCase()
+      ) {
         stats.totalCoreStaked = stats.totalCoreStaked.plus(coreAmount);
-        order.totalStakeActions += 1;
-
-        order.realtimeStakeAmount = order.realtimeStakeAmount.plus(coreAmount);
-        order.realtimeTier = order.realtimeStakeAmount.div(
-          order.btcAmount as BigInt
-        );
-      } else {
-        stats.totalCoreStaked = stats.totalCoreStaked.minus(coreAmount);
-        order.totalWithdrawActions += 1;
-
-        order.realtimeStakeAmount = order.realtimeStakeAmount.minus(coreAmount);
-        order.realtimeTier = order.realtimeStakeAmount.div(
-          order.btcAmount as BigInt
-        );
       }
+      order.totalStakeActions += 1;
+      order.realtimeStakeAmount = order.realtimeStakeAmount.plus(coreAmount);
+      order.realtimeTier = order.realtimeStakeAmount.div(
+        order.btcAmount as BigInt
+      );
+    } else {
+      if (
+        user.toHexString().toLowerCase() !=
+        MARKETPLACE_STRATEGY_ADDRESS.toLowerCase()
+      ) {
+        stats.totalCoreStaked = stats.totalCoreStaked.minus(coreAmount);
+      }
+      order.totalWithdrawActions += 1;
+      order.realtimeStakeAmount = order.realtimeStakeAmount.minus(coreAmount);
+      order.realtimeTier = order.realtimeStakeAmount.div(
+        order.btcAmount as BigInt
+      );
     }
+    
     order.totalActions += 1;
     order.save();
     stats.save();

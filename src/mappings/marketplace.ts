@@ -1,10 +1,28 @@
-import {Address, BigInt} from '@graphprotocol/graph-ts'
-import {ClaimProxy, CreateRewardReceiver, StakeCoreProxy, Marketplace} from '../types/Marketplace/Marketplace'
-import {Order, OrderAction, StakedInOrder, Stats, User} from '../types/schema'
-import {createUser, getId, ZERO_BI, B14G_ID, MARKETPLACE, ORDER_ACTION, handleOrderAction} from "./helpers";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import {
+  ClaimProxy,
+  CreateRewardReceiver,
+  StakeCoreProxy,
+  Marketplace,
+} from "../types/Marketplace/Marketplace";
+import {
+  Order,
+  OrderAction,
+  StakedInOrder,
+  Stats,
+  User,
+} from "../types/schema";
+import {
+  createUser,
+  getId,
+  ZERO_BI,
+  B14G_ID,
+  MARKETPLACE,
+  ORDER_ACTION,
+  handleOrderAction,
+} from "./helpers";
 
-let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE))
-
+let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE));
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
   let orderAction = new OrderAction(getId(event));
@@ -124,6 +142,9 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
 }
 
 export function handleClaimProxy(event: ClaimProxy): void {
+  if (event.params.amount == ZERO_BI) {
+    return;
+  }
   let orderAction = new OrderAction(getId(event));
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
