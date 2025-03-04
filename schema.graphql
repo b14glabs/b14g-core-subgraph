@@ -44,16 +44,10 @@ type Vault @entity {
 }
 
 type Order @entity {
-  id: Bytes!
-  owner: Bytes!
-  btcAmount: BigInt
-  unlockTime: Int
-  validator: Bytes
-  bitcoinLockTx: Bytes
-  fee: BigInt!
-  rewardSharingPortion: BigInt!
-  btcEarned: BigInt!
-  coreEarned: BigInt!
+    id: ID!
+    owner: Bytes!
+    btcAmount: BigInt
+    unlockTime: Int
 
   realtimeTier: BigInt!
   realtimeStakeAmount: BigInt!
