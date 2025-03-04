@@ -99,3 +99,5 @@ dataSources:
           handler: handleStakeWithdraw
         - event: ClaimReward(uint256,uint256)
           handler: handleClaimReward
+        - event: ReInvest(bytes)
+          handler: handleReInvest
