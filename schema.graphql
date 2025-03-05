@@ -23,18 +23,18 @@ type User @entity {
   vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
 
   # vault
-  totalVaultAction: Int!
-  totalUnbondAction: Int!
-  totalDepositAction: Int!
-  totalVaultWithdrawAction: Int!
-  totalInstantRedeemAction: Int!
+  totalVaultActions: Int!
+  totalUnbondActions: Int!
+  totalDepositActions: Int!
+  totalVaultWithdrawActions: Int!
+  totalInstantRedeemActions: Int!
 
   # order
-  totalOrderAction: Int!
-  totalStakeAction: Int!
-  totalWithdrawAction: Int!
-  totalClaimBtcAction: Int!
-  totalClaimCoreAction: Int!
+  totalOrderActions: Int!
+  totalStakeActions: Int!
+  totalWithdrawActions: Int!
+  totalClaimBtcActions: Int!
+  totalClaimCoreActions: Int!
 }
 
 type StakedInOrder @entity{
