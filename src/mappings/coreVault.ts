@@ -1,7 +1,7 @@
-import { VaultAction, User, Stats, Vault} from '../types/schema'
+import { VaultAction, User, Stats, Vault, VaultExchangeRate} from '../types/schema'
 import {createUser, DUAL_CORE_VAULT, getId, handleVaultAction} from "./helpers";
 import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault, ClaimReward} from "../types/CoreVault/CoreVault";
-import {Address, Bytes} from "@graphprotocol/graph-ts";
+import {Address, BigInt, Bytes} from "@graphprotocol/graph-ts";
 import { B14G_ID } from './helpers';
 
 const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT))
@@ -42,7 +42,7 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
   vaultAction.from = event.params.user;
   vaultAction.amount = event.params.coreAmount;
   vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase());
-
+  
   vaultAction.totalCoreStaked = handleVaultAction(
     event.params.coreAmount.plus(event.params.fee),
     event.params.dualCoreAmount,
@@ -147,7 +147,13 @@ export function handleClaimReward(event: ClaimReward): void {
     if (!stats) {
       return
     }
+    if (event.params.reward > new BigInt(0)) {
+      let vaultExchangeRate = new VaultExchangeRate(getId(event))
+      vaultExchangeRate.timestamp = event.block.timestamp;
+      vaultExchangeRate.blockNumber = event.block.number;
+      vaultExchangeRate.value = coreVaultContract.exchangeCore(BigInt.fromI64(1_000_000_000_000_000_000))
+      vaultExchangeRate.save()
+    }
     stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
-  
     stats.save();
 }
