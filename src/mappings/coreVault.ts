@@ -28,8 +28,8 @@ export function handleStake(event: Stake): void {
   if (user === null) {
     user = createUser(event.params.user);
   }
-  user.totalDepositAction += 1;
-  user.totalVaultAction += 1;
+  user.totalDepositActions += 1;
+  user.totalVaultActions += 1;
 }
 
 export function handleWithdrawDirect(event: WithdrawDirect): void {
@@ -55,8 +55,8 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
   if (user === null) {
     return;
   }
-  user.totalInstantRedeemAction += 1;
-  user.totalVaultAction += 1;
+  user.totalInstantRedeemActions += 1;
+  user.totalVaultActions += 1;
 }
 
 export function handleUnbond(event: Unbond): void {
@@ -81,8 +81,8 @@ export function handleUnbond(event: Unbond): void {
   if (user === null) {
     return;
   }
-  user.totalUnbondAction += 1;
-  user.totalVaultAction += 1;
+  user.totalUnbondActions += 1;
+  user.totalVaultActions += 1;
 }
 
 export function handleStakeWithdraw(event: Withdraw): void {
@@ -111,8 +111,8 @@ export function handleStakeWithdraw(event: Withdraw): void {
   if (user === null) {
     return;
   }
-  user.totalVaultWithdrawAction += 1;
-  user.totalVaultAction += 1;
+  user.totalVaultWithdrawActions += 1;
+  user.totalVaultActions += 1;
 }
 
 export function handleReInvest(event: ReInvest): void {

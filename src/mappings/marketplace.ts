@@ -96,8 +96,8 @@ export function handleUserStake(event: StakeCoreProxy): void {
     user = createUser(event.params.from);
   }
   user.coreStakedInOrder = user.coreStakedInOrder.plus(event.params.value);
-  user.totalStakeAction += 1;
-  user.totalOrderAction += 1;
+  user.totalStakeActions += 1;
+  user.totalOrderActions += 1;
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
     stakedInOrder = new StakedInOrder(event.params.receiver.concat(user.id));
@@ -133,8 +133,8 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     return;
   }
   user.coreStakedInOrder = user.coreStakedInOrder.minus(event.params.value);
-  user.totalWithdrawAction += 1;
-  user.totalOrderAction += 1;
+  user.totalWithdrawActions += 1;
+  user.totalOrderActions += 1;
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
     return;
@@ -190,12 +190,12 @@ export function handleClaimProxy(event: ClaimProxy): void {
 
   if (event.params.isBtcClaim) {
     order.btcEarned = order.btcEarned.plus(event.params.amount);
-    user.totalClaimBtcAction += 1;
-    user.totalOrderAction += 1;
+    user.totalClaimBtcActions += 1;
+    user.totalOrderActions += 1;
   } else {
     order.coreEarned = order.coreEarned.plus(event.params.amount);
-    user.totalClaimCoreAction += 1;
-    user.totalOrderAction += 1;
+    user.totalClaimCoreActions += 1;
+    user.totalOrderActions += 1;
   }
   order.save();
 }
