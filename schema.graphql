@@ -14,16 +14,29 @@ enum VaultActionType{
     ReInvestVault
 }
 
-
-
 type User @entity {
-    id: Bytes!
-    dualCoreBalance: BigInt!
-    coreStakedInOrder: BigInt!
-    stakedOrder: [StakedInOrder!]! @derivedFrom(field: "user")
-    orderActionActivities: [OrderAction!]! @derivedFrom(field: "from")
-    vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
+  id: Bytes!
+  dualCoreBalance: BigInt!
+  coreStakedInOrder: BigInt!
+  stakedOrder: [StakedInOrder!]! @derivedFrom(field: "user")
+  orderActionActivities: [OrderAction!]! @derivedFrom(field: "from")
+  vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
+
+  # vault
+  totalVaultAction: Int!
+  totalUnbondAction: Int!
+  totalDepositAction: Int!
+  totalVaultWithdrawAction: Int!
+  totalInstantRedeemAction: Int!
+
+  # order
+  totalOrderAction: Int!
+  totalStakeAction: Int!
+  totalWithdrawAction: Int!
+  totalClaimBtcAction: Int!
+  totalClaimCoreAction: Int!
 }
+
 type StakedInOrder @entity{
 
     id: Bytes! #orderId+userId
