@@ -103,6 +103,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
     stakedInOrder = new StakedInOrder(event.params.receiver.concat(user.id));
     stakedInOrder.amount = event.params.value;
     stakedInOrder.user = event.params.from;
+    stakedInOrder.order = event.params.receiver;
   } else {
     stakedInOrder.amount = stakedInOrder.amount.plus(event.params.value);
   }

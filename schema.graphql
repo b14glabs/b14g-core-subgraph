@@ -37,11 +37,11 @@ type User @entity {
   totalClaimCoreActions: Int!
 }
 
-type StakedInOrder @entity{
-
-    id: Bytes! #orderId+userId
-    amount: BigInt!
-    user: User!
+type StakedInOrder @entity {
+  id: Bytes! #orderId+userId
+  amount: BigInt!
+  user: User!
+  order: Order!
 }
 
 type Vault @entity {
@@ -80,6 +80,8 @@ type Order @entity {
   createdAtTimestamp: BigInt!
   createdAtBlockNumber: BigInt!
   activities: [OrderAction!]! @derivedFrom(field: "order")
+
+  stakedInOrder: [StakedInOrder!]! @derivedFrom(field: "order")
 }
 
 
