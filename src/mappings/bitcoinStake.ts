@@ -7,7 +7,7 @@ let bitcoinStake = BitcoinStake.bind(Address.fromString("0x000000000000000000000
 export function handleBTCStaked(event: delegated): void {
     let order = Order.load(event.params.delegator);
     if (order === null) return;
-    if (!order.bitcoinLockTx) {
+    if (order.bitcoinLockTx == null) {
       const user = User.load(order.owner);
       if (!user) {
         return;
