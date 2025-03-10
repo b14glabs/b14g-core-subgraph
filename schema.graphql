@@ -35,6 +35,8 @@ type User @entity {
   totalWithdrawActions: Int!
   totalClaimBtcActions: Int!
   totalClaimCoreActions: Int!
+
+  totalValidOrder: Int!
 }
 
 type StakedInOrder @entity {
@@ -67,6 +69,8 @@ type Order @entity {
   rewardSharingPortion: BigInt!
   btcEarned: BigInt!
   coreEarned: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
 
   realtimeTier: BigInt!
   realtimeStakeAmount: BigInt!
@@ -76,9 +80,6 @@ type Order @entity {
   totalWithdrawActions: Int!
   totalClaimCoreActions: Int!
   totalClaimBtcActions: Int!
-
-  createdAtTimestamp: BigInt!
-  createdAtBlockNumber: BigInt!
   activities: [OrderAction!]! @derivedFrom(field: "order")
 
   stakedInOrder: [StakedInOrder!]! @derivedFrom(field: "order")

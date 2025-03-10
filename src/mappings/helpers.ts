@@ -32,6 +32,8 @@ export function createUser(id: Bytes): User {
   user.totalWithdrawActions = 0;
   user.totalClaimBtcActions = 0;
   user.totalClaimCoreActions = 0;
+
+  user.totalValidOrder = 0;
   user.save();
   let stats = Stats.load(B14G_ID);
   if (!stats) {
