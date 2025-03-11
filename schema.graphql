@@ -35,8 +35,6 @@ type User @entity {
   totalWithdrawActions: Int!
   totalClaimBtcActions: Int!
   totalClaimCoreActions: Int!
-
-  totalValidOrder: Int!
 }
 
 type StakedInOrder @entity {
@@ -64,7 +62,7 @@ type Order @entity {
   btcAmount: BigInt
   unlockTime: Int
   validator: Bytes
-  bitcoinLockTx: Bytes
+  bitcoinLockTx: Bytes!
   fee: BigInt!
   rewardSharingPortion: BigInt!
   btcEarned: BigInt!

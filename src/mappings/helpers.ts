@@ -18,36 +18,35 @@ export const B14G_ID = "b14g";
 export const MARKETPLACE = "0x04EA61C431F7934d51fEd2aCb2c5F942213f8967";
 
 export function createUser(id: Bytes): User {
-  let user = new User(id);
-  user.dualCoreBalance = ZERO_BI;
-  user.coreStakedInOrder = ZERO_BI;
-  user.totalVaultActions = 0;
-  user.totalUnbondActions = 0;
-  user.totalDepositActions = 0;
-  user.totalVaultWithdrawActions = 0;
-  user.totalInstantRedeemActions = 0;
+                                              let user = new User(id);
+                                              user.dualCoreBalance = ZERO_BI;
+                                              user.coreStakedInOrder = ZERO_BI;
+                                              user.totalVaultActions = 0;
+                                              user.totalUnbondActions = 0;
+                                              user.totalDepositActions = 0;
+                                              user.totalVaultWithdrawActions = 0;
+                                              user.totalInstantRedeemActions = 0;
 
-  user.totalOrderActions = 0;
-  user.totalStakeActions = 0;
-  user.totalWithdrawActions = 0;
-  user.totalClaimBtcActions = 0;
-  user.totalClaimCoreActions = 0;
+                                              user.totalOrderActions = 0;
+                                              user.totalStakeActions = 0;
+                                              user.totalWithdrawActions = 0;
+                                              user.totalClaimBtcActions = 0;
+                                              user.totalClaimCoreActions = 0;
 
-  user.totalValidOrder = 0;
-  user.save();
-  let stats = Stats.load(B14G_ID);
-  if (!stats) {
-    stats = new Stats(B14G_ID);
-    stats.totalStaker = 0;
-    stats.totalCoreStaked = ZERO_BI;
-    stats.totalDualCore = ZERO_BI;
-    stats.totalEarned = ZERO_BI;
-    //   stats.listOrder = []
-  }
-  stats.totalStaker += 1;
-  stats.save();
-  return user;
-}
+                                              user.save();
+                                              let stats = Stats.load(B14G_ID);
+                                              if (!stats) {
+                                                stats = new Stats(B14G_ID);
+                                                stats.totalStaker = 0;
+                                                stats.totalCoreStaked = ZERO_BI;
+                                                stats.totalDualCore = ZERO_BI;
+                                                stats.totalEarned = ZERO_BI;
+                                                //   stats.listOrder = []
+                                              }
+                                              stats.totalStaker += 1;
+                                              stats.save();
+                                              return user;
+                                            }
 
 export function createVault(id: string): Vault {
   let vault = new Vault(Bytes.fromHexString(id));

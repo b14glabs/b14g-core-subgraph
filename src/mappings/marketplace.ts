@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ClaimProxy,
   CreateRewardReceiver,
@@ -20,6 +20,7 @@ import {
   MARKETPLACE,
   ORDER_ACTION,
   handleOrderAction,
+  ADDRESS_ZERO,
 } from "./helpers";
 
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE));
@@ -62,6 +63,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   order.rewardSharingPortion = event.params.portion;
   order.realtimeStakeAmount = ZERO_BI;
   order.realtimeTier = ZERO_BI;
+  order.bitcoinLockTx = Bytes.fromHexString(ADDRESS_ZERO);
 
   order.totalStakeActions = 0;
   order.totalWithdrawActions = 0;
