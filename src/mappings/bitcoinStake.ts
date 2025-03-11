@@ -11,6 +11,11 @@ export function handleBTCStaked(event: delegated): void {
   let order = Order.load(event.params.delegator);
   if (order === null) return;
   if (order.bitcoinLockTx.toHexString() == ADDRESS_ZERO) {
+    const user = User.load(order.owner);
+    if (!user) {
+      return;
+    }
+    user.totalValidOrder += 1;
     order.btcAmount = event.params.amount;
     order.unlockTime = bitcoinStake
       .btcTxMap(event.params.txid)
@@ -19,5 +24,6 @@ export function handleBTCStaked(event: delegated): void {
     order.validator = event.params.candidate;
     order.bitcoinLockTx = event.params.txid;
     order.save();
+    user.save();
   }
 }

@@ -35,6 +35,8 @@ type User @entity {
   totalWithdrawActions: Int!
   totalClaimBtcActions: Int!
   totalClaimCoreActions: Int!
+
+  totalValidOrder: Int!
 }
 
 type StakedInOrder @entity {
@@ -83,58 +85,54 @@ type Order @entity {
   stakedInOrder: [StakedInOrder!]! @derivedFrom(field: "order")
 }
 
-
-
-
-type OrderAction @entity (immutable: true){
-    id: Bytes!
-    txHash: Bytes!
-    blockNumber: BigInt!
-    timestamp: BigInt!
-    type: OrderActionType!
-    from: User!
-    order: Order!
-    amount: BigInt
-    totalCoreStaked: BigInt!
+type OrderAction @entity(immutable: true) {
+  id: Bytes!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  type: OrderActionType!
+  from: User!
+  order: Order!
+  amount: BigInt
+  totalCoreStaked: BigInt!
 }
 
-type VaultAction @entity (immutable: true){
-    id: Bytes!
-    txHash: Bytes!
-    blockNumber: BigInt!
-    timestamp: BigInt!
-    type: VaultActionType!
-    from: User!
-    to: Vault!
-    amount: BigInt!
-    totalCoreStaked: BigInt!
+type VaultAction @entity(immutable: true) {
+  id: Bytes!
+  txHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  type: VaultActionType!
+  from: User!
+  to: Vault!
+  amount: BigInt!
+  totalCoreStaked: BigInt!
 }
 
-type VaultExchangeRate @entity{
-    id: Bytes!
-    blockNumber: BigInt!
-    timestamp: BigInt!
-    value: BigInt!
+type VaultExchangeRate @entity {
+  id: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  value: BigInt!
 }
 
-
-type DualCoreTransfer @entity (immutable: true){
-    # transaction hash + "-" + index in mints Transaction array
-    id: Bytes!
-    transaction: Bytes!
-    timestamp: BigInt! # need this to pull recent txns for specific token or pair
-    amount: BigInt
-    to: Bytes
-    from: Bytes
-    logIndex: BigInt
+type DualCoreTransfer @entity(immutable: true) {
+  # transaction hash + "-" + index in mints Transaction array
+  id: Bytes!
+  transaction: Bytes!
+  timestamp: BigInt! # need this to pull recent txns for specific token or pair
+  amount: BigInt
+  to: Bytes
+  from: Bytes
+  logIndex: BigInt
 }
 
 type Stats @entity {
-    id: ID!
-    totalStaker: Int!
-    totalCoreStaked: BigInt!
-    totalDualCore: BigInt!
-    #   totalBtcStaked: BigInt!
-    #   listOrder: [Order!]!
-    totalEarned: BigInt!
+  id: ID!
+  totalStaker: Int!
+  totalCoreStaked: BigInt!
+  totalDualCore: BigInt!
+  #   totalBtcStaked: BigInt!
+  #   listOrder: [Order!]!
+  totalEarned: BigInt!
 }
