@@ -102,22 +102,22 @@ export function handleUserStake(event: StakeCoreProxy): void {
     event.params.receiver.concat(user.id)
   );
   if (!orderActionCount) {
-    orderActionCount = new OrderActionCount(
-      event.params.receiver.concat(user.id)
-    );
-    orderActionCount.total = 0;
-    orderActionCount.stake = 0;
-    orderActionCount.withdraw = 0;
-    orderActionCount.claimBtc = 0;
-    orderActionCount.claimCore = 0;
+                           orderActionCount = new OrderActionCount(
+                             event.params.receiver.concat(user.id)
+                           );
+                           orderActionCount.total = 0;
+                           orderActionCount.stake = 0;
+                           orderActionCount.withdraw = 0;
+                           orderActionCount.claimBtc = 0;
+                           orderActionCount.claimCore = 0;
 
-    orderActionCount.user = user.id;
-    orderActionCount.order = event.params.receiver;
-  }
-  orderActionCount.save();
+                           orderActionCount.user = user.id;
+                           orderActionCount.order = event.params.receiver;
+                         }
   user.coreStakedInOrder = user.coreStakedInOrder.plus(event.params.value);
   orderActionCount.stake += 1;
   orderActionCount.total += 1;
+  orderActionCount.save();
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
     stakedInOrder = new StakedInOrder(event.params.receiver.concat(user.id));
