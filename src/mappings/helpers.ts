@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { Order, Stats, User, Vault } from "../types/schema";
+import { Order, Stats, User, Vault, VaultActionCount } from "../types/schema";
 
 export enum ORDER_ACTION {
   STAKE,
@@ -21,20 +21,23 @@ export function createUser(id: Bytes): User {
   let user = new User(id);
   user.dualCoreBalance = ZERO_BI;
   user.coreStakedInOrder = ZERO_BI;
-  // user.totalVaultActions = 0;
-  // user.totalUnbondActions = 0;
-  // user.totalDepositActions = 0;
-  // user.totalVaultWithdrawActions = 0;
-  // user.totalInstantRedeemActions = 0;
-
-  // user.totalOrderActions = 0;
-  // user.totalStakeActions = 0;
-  // user.totalWithdrawActions = 0;
-  // user.totalClaimBtcActions = 0;
-  // user.totalClaimCoreActions = 0;
   user.totalValidOrder = 0;
 
   user.save();
+
+  let vaultActionCount = VaultActionCount.load(id);
+  if (!vaultActionCount) {
+    vaultActionCount = new VaultActionCount(user.id);
+    vaultActionCount.user = user.id;
+
+    vaultActionCount.total = 0;
+    vaultActionCount.deposit = 0;
+    vaultActionCount.unbond = 0;
+    vaultActionCount.instantRedeem = 0;
+    vaultActionCount.withdraw = 0;
+  }
+  vaultActionCount.save();
+
   let stats = Stats.load(B14G_ID);
   if (!stats) {
     stats = new Stats(B14G_ID);

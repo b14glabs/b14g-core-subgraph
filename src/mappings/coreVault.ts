@@ -51,14 +51,7 @@ export function handleStake(event: Stake): void {
 
   let vaultActionCount = VaultActionCount.load(user.id);
   if (!vaultActionCount) {
-    vaultActionCount = new VaultActionCount(user.id);
-    vaultActionCount.user = user.id;
-
-    vaultActionCount.total = 0;
-    vaultActionCount.deposit = 0;
-    vaultActionCount.unbond = 0;
-    vaultActionCount.instantRedeem = 0;
-    vaultActionCount.withdraw = 0;
+    return;
   }
   vaultActionCount.deposit += 1;
   vaultActionCount.total += 1;
