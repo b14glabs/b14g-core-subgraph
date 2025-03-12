@@ -31,9 +31,9 @@ export function createUser(id: Bytes): User {
     vaultActionCount.user = user.id;
 
     vaultActionCount.total = 0;
-    vaultActionCount.deposit = 0;
+    vaultActionCount.stake = 0;
     vaultActionCount.unbond = 0;
-    vaultActionCount.instantRedeem = 0;
+    vaultActionCount.withdrawdirect = 0;
     vaultActionCount.withdraw = 0;
   }
   vaultActionCount.save();

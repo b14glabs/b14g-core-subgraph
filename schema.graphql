@@ -147,8 +147,8 @@ type VaultActionCount @entity {
   user: User!
 
   total: Int!
-  deposit: Int!
+  stake: Int!
   unbond: Int!
-  instantRedeem: Int!
+  withdrawdirect: Int!
   withdraw: Int!
 }

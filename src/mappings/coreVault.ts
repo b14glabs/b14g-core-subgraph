@@ -53,7 +53,7 @@ export function handleStake(event: Stake): void {
   if (!vaultActionCount) {
     return;
   }
-  vaultActionCount.deposit += 1;
+  vaultActionCount.stake += 1;
   vaultActionCount.total += 1;
   vaultActionCount.save();
 }
@@ -81,7 +81,7 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
   if (!vaultActionCount) {
     return;
   }
-  vaultActionCount.instantRedeem += 1;
+  vaultActionCount.withdrawdirect += 1;
   vaultActionCount.total += 1;
   vaultActionCount.save();
 }
