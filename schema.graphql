@@ -23,18 +23,10 @@ type User @entity {
   vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
 
   # vault
-  totalVaultActions: Int!
-  totalUnbondActions: Int!
-  totalDepositActions: Int!
-  totalVaultWithdrawActions: Int!
-  totalInstantRedeemActions: Int!
+  vaultActionCount: VaultActionCount! @derivedFrom(field: "user")
 
   # order
-  totalOrderActions: Int!
-  totalStakeActions: Int!
-  totalWithdrawActions: Int!
-  totalClaimBtcActions: Int!
-  totalClaimCoreActions: Int!
+  orderActionCount: [OrderActionCount!]! @derivedFrom(field: "user")
 
   totalValidOrder: Int!
 }
@@ -82,6 +74,7 @@ type Order @entity {
   totalClaimBtcActions: Int!
   activities: [OrderAction!]! @derivedFrom(field: "order")
 
+  orderActionCounts: [OrderActionCount!]! @derivedFrom(field: "order")
   stakedInOrder: [StakedInOrder!]! @derivedFrom(field: "order")
 }
 
@@ -135,4 +128,27 @@ type Stats @entity {
   #   totalBtcStaked: BigInt!
   #   listOrder: [Order!]!
   totalEarned: BigInt!
+}
+
+type OrderActionCount @entity {
+  id: Bytes! # orderId + userId
+  order: Order!
+  user: User!
+
+  total: Int!
+  stake: Int!
+  withdraw: Int!
+  claimCore: Int!
+  claimBtc: Int!
+}
+
+type VaultActionCount @entity {
+  id: Bytes!
+  user: User!
+
+  total: Int!
+  deposit: Int!
+  unbond: Int!
+  instantRedeem: Int!
+  withdraw: Int!
 }

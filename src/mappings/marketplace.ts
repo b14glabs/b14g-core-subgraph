@@ -8,6 +8,7 @@ import {
 import {
   Order,
   OrderAction,
+  OrderActionCount,
   StakedInOrder,
   Stats,
   User,
@@ -97,9 +98,26 @@ export function handleUserStake(event: StakeCoreProxy): void {
   if (user === null) {
     user = createUser(event.params.from);
   }
+  let orderActionCount = OrderActionCount.load(
+    event.params.receiver.concat(user.id)
+  );
+  if (!orderActionCount) {
+    orderActionCount = new OrderActionCount(
+      event.params.receiver.concat(user.id)
+    );
+    orderActionCount.total = 0;
+    orderActionCount.stake = 0;
+    orderActionCount.withdraw = 0;
+    orderActionCount.claimBtc = 0;
+    orderActionCount.claimCore = 0;
+
+    orderActionCount.user = user.id;
+    orderActionCount.order = event.params.receiver;
+  }
+  orderActionCount.save();
   user.coreStakedInOrder = user.coreStakedInOrder.plus(event.params.value);
-  user.totalStakeActions += 1;
-  user.totalOrderActions += 1;
+  orderActionCount.stake += 1;
+  orderActionCount.total += 1;
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
     stakedInOrder = new StakedInOrder(event.params.receiver.concat(user.id));
@@ -135,9 +153,16 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
   if (user === null) {
     return;
   }
+  let orderActionCount = OrderActionCount.load(
+    event.params.receiver.concat(user.id)
+  );
+  if (!orderActionCount) {
+    return;
+  }
   user.coreStakedInOrder = user.coreStakedInOrder.minus(event.params.value);
-  user.totalWithdrawActions += 1;
-  user.totalOrderActions += 1;
+  orderActionCount.withdraw += 1;
+  orderActionCount.total += 1;
+  orderActionCount.save();
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
     return;
@@ -186,19 +211,22 @@ export function handleClaimProxy(event: ClaimProxy): void {
     return;
   }
 
-  let user = User.load(event.params.from);
-  if (user === null) {
+  let orderActionCount = OrderActionCount.load(
+    event.params.receiver.concat(event.params.from)
+  );
+  if (!orderActionCount) {
     return;
   }
 
   if (event.params.isBtcClaim) {
     order.btcEarned = order.btcEarned.plus(event.params.amount);
-    user.totalClaimBtcActions += 1;
-    user.totalOrderActions += 1;
+    orderActionCount.claimBtc += 1;
+    orderActionCount.total += 1;
   } else {
     order.coreEarned = order.coreEarned.plus(event.params.amount);
-    user.totalClaimCoreActions += 1;
-    user.totalOrderActions += 1;
+    orderActionCount.claimCore += 1;
+    orderActionCount.total += 1;
   }
+  orderActionCount.save();
   order.save();
 }

@@ -21,17 +21,17 @@ export function createUser(id: Bytes): User {
   let user = new User(id);
   user.dualCoreBalance = ZERO_BI;
   user.coreStakedInOrder = ZERO_BI;
-  user.totalVaultActions = 0;
-  user.totalUnbondActions = 0;
-  user.totalDepositActions = 0;
-  user.totalVaultWithdrawActions = 0;
-  user.totalInstantRedeemActions = 0;
+  // user.totalVaultActions = 0;
+  // user.totalUnbondActions = 0;
+  // user.totalDepositActions = 0;
+  // user.totalVaultWithdrawActions = 0;
+  // user.totalInstantRedeemActions = 0;
 
-  user.totalOrderActions = 0;
-  user.totalStakeActions = 0;
-  user.totalWithdrawActions = 0;
-  user.totalClaimBtcActions = 0;
-  user.totalClaimCoreActions = 0;
+  // user.totalOrderActions = 0;
+  // user.totalStakeActions = 0;
+  // user.totalWithdrawActions = 0;
+  // user.totalClaimBtcActions = 0;
+  // user.totalClaimCoreActions = 0;
   user.totalValidOrder = 0;
 
   user.save();

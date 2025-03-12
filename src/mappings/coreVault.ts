@@ -1,10 +1,30 @@
-import { VaultAction, User, Stats, Vault, VaultExchangeRate} from '../types/schema'
-import {createUser, DUAL_CORE_VAULT, getId, handleVaultAction} from "./helpers";
-import {ReInvest, Stake, Unbond, Withdraw, WithdrawDirect, CoreVault, ClaimReward} from "../types/CoreVault/CoreVault";
-import {Address, BigInt, Bytes} from "@graphprotocol/graph-ts";
-import { B14G_ID } from './helpers';
+import {
+  VaultAction,
+  User,
+  Stats,
+  Vault,
+  VaultExchangeRate,
+  VaultActionCount,
+} from "../types/schema";
+import {
+  createUser,
+  DUAL_CORE_VAULT,
+  getId,
+  handleVaultAction,
+} from "./helpers";
+import {
+  ReInvest,
+  Stake,
+  Unbond,
+  Withdraw,
+  WithdrawDirect,
+  CoreVault,
+  ClaimReward,
+} from "../types/CoreVault/CoreVault";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { B14G_ID } from "./helpers";
 
-const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT))
+const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT));
 
 export function handleStake(event: Stake): void {
   let vaultAction = new VaultAction(getId(event));
@@ -28,9 +48,21 @@ export function handleStake(event: Stake): void {
   if (user === null) {
     user = createUser(event.params.user);
   }
-  user.totalDepositActions += 1;
-  user.totalVaultActions += 1;
-  user.save();
+
+  let vaultActionCount = VaultActionCount.load(user.id);
+  if (!vaultActionCount) {
+    vaultActionCount = new VaultActionCount(user.id);
+    vaultActionCount.user = user.id;
+
+    vaultActionCount.total = 0;
+    vaultActionCount.deposit = 0;
+    vaultActionCount.unbond = 0;
+    vaultActionCount.instantRedeem = 0;
+    vaultActionCount.withdraw = 0;
+  }
+  vaultActionCount.deposit += 1;
+  vaultActionCount.total += 1;
+  vaultActionCount.save();
 }
 
 export function handleWithdrawDirect(event: WithdrawDirect): void {
@@ -42,7 +74,7 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
   vaultAction.from = event.params.user;
   vaultAction.amount = event.params.coreAmount;
   vaultAction.to = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase());
-  
+
   vaultAction.totalCoreStaked = handleVaultAction(
     event.params.coreAmount.plus(event.params.fee),
     event.params.dualCoreAmount,
@@ -52,13 +84,13 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
 
   vaultAction.save();
 
-  let user = User.load(event.params.user);
-  if (user === null) {
+  let vaultActionCount = VaultActionCount.load(event.params.user);
+  if (!vaultActionCount) {
     return;
   }
-  user.totalInstantRedeemActions += 1;
-  user.totalVaultActions += 1;
-  user.save();
+  vaultActionCount.instantRedeem += 1;
+  vaultActionCount.total += 1;
+  vaultActionCount.save();
 }
 
 export function handleUnbond(event: Unbond): void {
@@ -78,14 +110,13 @@ export function handleUnbond(event: Unbond): void {
     true
   );
   vaultAction.save();
-
-  let user = User.load(event.params.user);
-  if (user === null) {
+  let vaultActionCount = VaultActionCount.load(event.params.user);
+  if (!vaultActionCount) {
     return;
   }
-  user.totalUnbondActions += 1;
-  user.totalVaultActions += 1;
-  user.save();
+  vaultActionCount.unbond += 1;
+  vaultActionCount.total += 1;
+  vaultActionCount.save();
 }
 
 export function handleStakeWithdraw(event: Withdraw): void {
@@ -110,13 +141,13 @@ export function handleStakeWithdraw(event: Withdraw): void {
   vault.totalActions += 1;
   vault.save();
 
-  let user = User.load(event.params.user);
-  if (user === null) {
+  let vaultActionCount = VaultActionCount.load(event.params.user);
+  if (!vaultActionCount) {
     return;
   }
-  user.totalVaultWithdrawActions += 1;
-  user.totalVaultActions += 1;
-  user.save();
+  vaultActionCount.withdraw += 1;
+  vaultActionCount.total += 1;
+  vaultActionCount.save();
 }
 
 export function handleReInvest(event: ReInvest): void {
@@ -143,17 +174,19 @@ export function handleReInvest(event: ReInvest): void {
 }
 
 export function handleClaimReward(event: ClaimReward): void {
-    let stats = Stats.load(B14G_ID);
-    if (!stats) {
-      return
-    }
-    if (event.params.reward > new BigInt(0)) {
-      let vaultExchangeRate = new VaultExchangeRate(getId(event))
-      vaultExchangeRate.timestamp = event.block.timestamp;
-      vaultExchangeRate.blockNumber = event.block.number;
-      vaultExchangeRate.value = coreVaultContract.exchangeCore(BigInt.fromI64(1_000_000_000_000_000_000))
-      vaultExchangeRate.save()
-    }
-    stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
-    stats.save();
+  let stats = Stats.load(B14G_ID);
+  if (!stats) {
+    return;
+  }
+  if (event.params.reward > new BigInt(0)) {
+    let vaultExchangeRate = new VaultExchangeRate(getId(event));
+    vaultExchangeRate.timestamp = event.block.timestamp;
+    vaultExchangeRate.blockNumber = event.block.number;
+    vaultExchangeRate.value = coreVaultContract.exchangeCore(
+      BigInt.fromI64(1_000_000_000_000_000_000)
+    );
+    vaultExchangeRate.save();
+  }
+  stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
+  stats.save();
 }
