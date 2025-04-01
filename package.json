@@ -9,9 +9,9 @@
     "build": "run-s codegen && graph build",
     "buildonly": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "create-local": "graph create b14g-core-subgraph --node http://127.0.0.1:8020",
+    "create-local": "graph create b14g-core-subgraph --node https://thegraph-node.test2.btcs.network --access-token=b020b95e511443699e72a10c697f84c0",
     "create": "graph create b14g-core-subgraph --node https://thegraph.coredao.org/deploy/ --access-token=",
-    "deploy-local": "graph deploy b14g-core-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020 --version-label v0.0.1",
+    "deploy-local": "graph deploy b14g-core-subgraph --ipfs https://thegraph-ipfs.test2.btcs.network --node https://thegraph-node.test2.btcs.network --version-label v0.0.1 --access-token=b020b95e511443699e72a10c697f84c0",
     "deploy": "graph deploy b14g-core-subgraph --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token=",
     "watch-local": "graph deploy b14g-core-subgraph --watch --node http://127.0.0.1:8020/ --ipfs http://localhost:5001 --version-label v0.0.1"
   },

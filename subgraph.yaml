@@ -1,37 +1,37 @@
-specVersion: 0.0.4
+specVersion: 1.2.0
 description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
-    name: DualCoreToken
-    network: core
-    source:
-      address: '0xc5555eA27e63cd89f8b227deCe2a3916800c0f4F'
-      abi: ERC20
-      startBlock: 21009080
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      file: ./src/mappings/dualCore.ts
-      entities:
-        - Transfer
-      abis:
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+  # - kind: ethereum/contract
+  #   name: DualCoreToken
+  #   network: core
+  #   source:
+  #     address: '0xf5b76d9bf4fC12fA42402F5fADe76b9b40258530'
+  #     abi: ERC20
+  #     startBlock: 2387769
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     file: ./src/mappings/dualCore.ts
+  #     entities:
+  #       - Transfer
+  #     abis:
+  #       - name: ERC20
+  #         file: ./abis/ERC20.json
+  #     eventHandlers:
+  #       - event: Transfer(indexed address,indexed address,uint256)
+  #         handler: handleTransfer
 
   - kind: ethereum/contract
     name: Marketplace
     network: core
     source:
-      address: '0x04EA61C431F7934d51fEd2aCb2c5F942213f8967'
+      address: '0x60B751F1c8A4E1105600922DA5901354F8F16923'
       abi: Marketplace
-      startBlock: 19942200
+      startBlock: 2994268
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -57,7 +57,7 @@ dataSources:
     source:
       address: '0x0000000000000000000000000000000000001014'
       abi: BitcoinStake
-      startBlock: 19942200
+      startBlock: 2994268
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -71,33 +71,85 @@ dataSources:
       eventHandlers:
         - event: delegated(indexed bytes32,indexed address,indexed address,bytes,uint32,uint64,uint256)
           handler: handleBTCStaked
+  # - kind: ethereum/contract
+  #   name: CoreVault
+  #   network: core
+  #   source:
+  #     address: '0x709C959C28E45BF69318b8233ffFaAe68b396373'
+  #     abi: CoreVault
+  #     startBlock: 2387772
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     file: ./src/mappings/coreVault.ts
+  #     entities:
+  #       - Order
+  #     abis:
+  #       - name: CoreVault
+  #         file: ./abis/coreVault.json
+  #     eventHandlers:
+  #       - event: Stake(indexed address,uint256,uint256)
+  #         handler: handleStake
+  #       - event: WithdrawDirect(indexed address,uint256,uint256,uint256)
+  #         handler: handleWithdrawDirect
+  #       - event: Unbond(indexed address,uint256,uint256,uint256)
+  #         handler: handleUnbond
+  #       - event: Withdraw(indexed address,uint256,uint256)
+  #         handler: handleStakeWithdraw
+  #       - event: ClaimReward(uint256,uint256)
+  #         handler: handleClaimReward
+  #       - event: ReInvest(bytes)
+  #         handler: handleReInvest
   - kind: ethereum/contract
-    name: CoreVault
+    name: Lottery
     network: core
     source:
-      address: '0xee21ab613d30330823D35Cf91A84cE964808B83F'
-      abi: CoreVault
-      startBlock: 21007765
+      address: '0x869b8393b075a732Ea40EBC7caCe0A59b50B9814'
+      abi: Lottery
+      startBlock: 3259839
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
-      file: ./src/mappings/coreVault.ts
+      file: ./src/mappings/lottery.ts
       entities:
-        - Order
+        - Lottery
       abis:
-        - name: CoreVault
-          file: ./abis/coreVault.json
+        - name: Lottery
+          file: ./abis/lottery.json
       eventHandlers:
-        - event: Stake(indexed address,uint256,uint256)
-          handler: handleStake
-        - event: WithdrawDirect(indexed address,uint256,uint256,uint256)
-          handler: handleWithdrawDirect
-        - event: Unbond(indexed address,uint256,uint256,uint256)
-          handler: handleUnbond
-        - event: Withdraw(indexed address,uint256,uint256)
-          handler: handleStakeWithdraw
-        - event: ClaimReward(uint256,uint256)
-          handler: handleClaimReward
-        - event: ReInvest(bytes)
-          handler: handleReInvest
+        - event: Deposit(indexed address,indexed address)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed address)
+          handler: handleWithdraw
+        - event: ClaimReward(indexed address,uint256)
+          handler: handleWinnerClaim
+        - event: Start(uint48,uint256)
+          handler: handleStartRound
+        - event: EndRound(indexed uint256,uint256,uint256,uint256,address[])
+          handler: handleEndRound
+        - event: ClaimRewards(uint256[],uint256,uint256)
+          handler: handleClaimRewards
+  - kind: ethereum/contract
+    name: Yield
+    network: core
+    source:
+      address: '0x240a9377ee002A07c5d055871Daa24Af130B800f'
+      abi: Yield
+      startBlock: 3225911
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/yieldBtc.ts
+      entities:
+        - YieldBTC
+      abis:
+        - name: Yield
+          file: ./abis/yieldBtc.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransferToken
+          calls: 
+            Yield.tokenIdToRewardReceiver: Yield[event.address].tokenIdToRewardReceiver(event.params.tokenId)
