@@ -1,4 +1,4 @@
-specVersion: 1.2.0
+specVersion: 0.0.7
 description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
@@ -44,8 +44,8 @@ dataSources:
       eventHandlers:
         - event: CreateRewardReceiver(indexed address,indexed address,uint256,uint256)
           handler: handleNewOrder
-          calls: 
-            Marketplace.fee: Marketplace[event.address].fee()
+          # calls: 
+          #   Marketplace.fee: Marketplace[event.address].fee()
         - event: StakeCoreProxy(indexed address,indexed address,indexed address,uint256)
           handler: handleUserStake
         - event: WithdrawProxy(indexed address,indexed address,indexed address,uint256)
@@ -152,5 +152,5 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransferToken
-          calls: 
-            Yield.tokenIdToRewardReceiver: Yield[event.address].tokenIdToRewardReceiver(event.params.tokenId)
+          # calls: 
+          #   Yield.tokenIdToRewardReceiver: Yield[event.address].tokenIdToRewardReceiver(event.params.tokenId)
