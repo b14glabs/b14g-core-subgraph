@@ -18,7 +18,6 @@ export function handleTransferToken(event: Transfer): void {
     const yieldBtc = new YieldBTC(receiver);
     yieldBtc.isDeposited = false;
     yieldBtc.user = event.params.to;
-    yieldBtc.lottery = lottery.id;
     yieldBtc.order = receiver;
     yieldBtc.tokenId = event.params.tokenId;
     yieldBtc.save();

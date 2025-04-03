@@ -105,7 +105,6 @@ type Lottery @entity {
   totalWithdraw: Int!
   totalWinnerClaim: Int!
 
-  yieldBtcs: [YieldBTC!]! @derivedFrom(field: "lottery")
   totalParticipants: BigInt!
   totalYields: BigInt!
   totalBtcStaked: BigInt!
@@ -230,6 +229,5 @@ type YieldBTC @entity {
   tokenId: BigInt!
   isDeposited: Boolean!
   user: User!
-  lottery: Lottery!
   order: Order!
 }

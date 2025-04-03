@@ -23,8 +23,8 @@
     "name": "fee",
     "outputs": [
       {
-        "name": "",
         "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
