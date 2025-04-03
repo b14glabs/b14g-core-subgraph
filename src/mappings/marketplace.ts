@@ -6,12 +6,14 @@ import {
   Marketplace,
 } from "../types/Marketplace/Marketplace";
 import {
+  Lottery,
   Order,
   OrderAction,
   OrderActionCount,
   StakedInOrder,
   Stats,
   User,
+  YieldBTC,
 } from "../types/schema";
 import {
   createUser,
@@ -22,9 +24,14 @@ import {
   ORDER_ACTION,
   handleOrderAction,
   ADDRESS_ZERO,
+  LOTTERY,
+  createLottery,
+  YIELD_BTC,
 } from "./helpers";
+import { Yield } from "../types/Yield/Yield";
 
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE));
+let yieldContract = Yield.bind(Address.fromString(YIELD_BTC.toLowerCase()));
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
   let orderAction = new OrderAction(getId(event));
@@ -65,6 +72,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   order.realtimeStakeAmount = ZERO_BI;
   order.realtimeTier = ZERO_BI;
   order.bitcoinLockTx = Bytes.fromHexString(ADDRESS_ZERO);
+  order.btcAmount = ZERO_BI;
 
   order.totalStakeActions = 0;
   order.totalWithdrawActions = 0;
@@ -72,6 +80,8 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   order.totalClaimBtcActions = 0;
   // order.stakedAmount = new BigInt(0)
   order.totalActions = 1;
+  order.roundReward = ZERO_BI;
+  order.updatedRound = ZERO_BI;
   order.save();
   // stats.listOrder = stats.listOrder.concat([order.id])
 }
@@ -184,6 +194,11 @@ export function handleClaimProxy(event: ClaimProxy): void {
     ? "ClaimCoreForBTCHolder"
     : "ClaimCoreForCoreHolder";
 
+  let user = User.load(event.params.from);
+  if (!user) {
+    user = createUser(event.params.from);
+  }
+
   orderAction.from = event.params.from;
   orderAction.order = event.params.receiver;
   orderAction.amount = event.params.amount;
@@ -232,6 +247,12 @@ export function handleClaimProxy(event: ClaimProxy): void {
     order.btcEarned = order.btcEarned.plus(event.params.amount);
     orderActionCount.claimBtc += 1;
     orderActionCount.total += 1;
+    const yieldBtc = YieldBTC.load(event.params.receiver);
+    const lottery = Lottery.load(Address.fromString(LOTTERY.toLowerCase()));
+    if (yieldBtc && yieldBtc.isDeposited && lottery) {
+      order.roundReward = event.params.amount;
+      order.updatedRound = lottery.currentRound;
+    }
   } else {
     order.coreEarned = order.coreEarned.plus(event.params.amount);
     orderActionCount.claimCore += 1;

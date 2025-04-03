@@ -1,6 +1,15 @@
 /* eslint-disable prefer-const */
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { Order, Stats, User, Vault, VaultActionCount } from "../types/schema";
+import {
+  Lottery,
+  LotteryActionCount,
+  LotteryRound,
+  Order,
+  Stats,
+  User,
+  Vault,
+  VaultActionCount,
+} from "../types/schema";
 
 export enum ORDER_ACTION {
   STAKE,
@@ -16,12 +25,15 @@ export const MARKETPLACE_STRATEGY_ADDRESS =
   "0xcd6D74b6852FbeEb1187ec0E231aB91E700eC3BA";
 export const B14G_ID = "b14g";
 export const MARKETPLACE = "0x04EA61C431F7934d51fEd2aCb2c5F942213f8967";
+export const LOTTERY = "0x606499355875Aafe39cF0910962f2BE4b16D5566";
+export const YIELD_BTC = "0xaC12840F51495F119290646824E503292607f679";
 
 export function createUser(id: Bytes): User {
   let user = new User(id);
   user.dualCoreBalance = ZERO_BI;
   user.coreStakedInOrder = ZERO_BI;
   user.totalValidOrder = 0;
+  user.totalYeildDeposited = ZERO_BI;
 
   user.save();
 
@@ -35,8 +47,20 @@ export function createUser(id: Bytes): User {
     vaultActionCount.unbond = 0;
     vaultActionCount.withdrawdirect = 0;
     vaultActionCount.withdraw = 0;
+    vaultActionCount.save();
   }
-  vaultActionCount.save();
+
+  let lotteryActionCount = LotteryActionCount.load(id);
+  if (!lotteryActionCount) {
+    lotteryActionCount = new LotteryActionCount(id);
+    lotteryActionCount.user = user.id;
+    lotteryActionCount.total = 0;
+    lotteryActionCount.stake = 0;
+    lotteryActionCount.withdraw = 0;
+    lotteryActionCount.claim = 0;
+
+    lotteryActionCount.save();
+  }
 
   let stats = Stats.load(B14G_ID);
   if (!stats) {
@@ -63,6 +87,55 @@ export function createVault(id: string): Vault {
   vault.totalReInvestActions = 0;
   vault.save();
   return vault;
+}
+
+export function createLotteryActionCount(id: Bytes): LotteryActionCount {
+  let lotteryActionCount = new LotteryActionCount(id);
+  lotteryActionCount.user = id;
+  lotteryActionCount.total = 0;
+  lotteryActionCount.stake = 0;
+  lotteryActionCount.withdraw = 0;
+  lotteryActionCount.claim = 0;
+  lotteryActionCount.save();
+  return lotteryActionCount;
+}
+
+export function createLottery(): Lottery {
+  let lottery = new Lottery(Bytes.fromHexString(LOTTERY.toLowerCase()));
+  lottery.currentRound = ZERO_BI;
+  lottery.totalActions = 0;
+  lottery.totalDeposit = 0;
+  lottery.totalWithdraw = 0;
+  lottery.totalWinnerClaim = 0;
+  lottery.totalParticipants = ZERO_BI;
+  lottery.totalBtcStaked = ZERO_BI;
+  lottery.totalYields = ZERO_BI;
+  lottery.totalReward = ZERO_BI;
+  lottery.totalFee = ZERO_BI;
+  lottery.save();
+  return lottery;
+}
+
+export function createLotteryRound(
+  startTime: BigInt,
+  round: BigInt
+): LotteryRound {
+  let lotteryRound = new LotteryRound(round.toString());
+
+  lotteryRound.lottery = Bytes.fromHexString(LOTTERY.toLowerCase());
+  lotteryRound.startTime = startTime;
+  lotteryRound.endTime = ZERO_BI;
+  lotteryRound.round = round;
+  lotteryRound.winners = [];
+  lotteryRound.rewardAmount = ZERO_BI;
+  lotteryRound.feeAmount = ZERO_BI;
+  lotteryRound.totalParticipants = ZERO_BI;
+  lotteryRound.totalYields = ZERO_BI;
+  lotteryRound.totalBtcStaked = ZERO_BI;
+  lotteryRound.timestamp = ZERO_BI;
+  lotteryRound.endRoundTx = Bytes.fromHexString(ADDRESS_ZERO);
+  lotteryRound.save();
+  return lotteryRound;
 }
 
 export function getId(event: ethereum.Event): Bytes {
