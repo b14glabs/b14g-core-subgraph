@@ -112,6 +112,9 @@ export function createLottery(): Lottery {
   lottery.totalYields = ZERO_BI;
   lottery.totalReward = ZERO_BI;
   lottery.totalFee = ZERO_BI;
+  lottery.totalRequestRandomness = 0;
+  lottery.totalFullfillRandomness = 0;
+  lottery.totalEndRound = 0;
   lottery.save();
   return lottery;
 }
