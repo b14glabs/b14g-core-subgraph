@@ -132,6 +132,10 @@ dataSources:
           handler: handleEndRound
         - event: ClaimRewards(uint256[],uint256,uint256)
           handler: handleClaimRewards
+        - event: RequestRandomness(bytes32)
+          handler: handleRequestRandomness
+        - event: FullfillRandomness(uint256)
+          handler: handleFullFillRandomness
   - kind: ethereum/contract
     name: Yield
     network: core
