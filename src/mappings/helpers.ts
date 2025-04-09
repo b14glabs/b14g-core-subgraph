@@ -134,7 +134,6 @@ export function createLotteryRound(
   lotteryRound.totalBtcStaked = ZERO_BI;
   lotteryRound.timestamp = ZERO_BI;
   lotteryRound.endRoundTx = Bytes.fromHexString(ADDRESS_ZERO);
-  lotteryRound.randomnessId = Bytes.fromHexString(ADDRESS_ZERO);
   lotteryRound.save();
   return lotteryRound;
 }

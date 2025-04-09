@@ -3,32 +3,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "randomNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "FullfillRandomness",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "randomnessId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "RequestRandomness",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "user",

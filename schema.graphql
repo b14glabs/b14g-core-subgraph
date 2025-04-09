@@ -18,9 +18,6 @@ enum LotteryActionType {
   DepositNFTToLottery
   WithdrawNFTFromLottery
   WinnerClaimReward
-  EndRound
-  RequestRandomness
-  FullfillRandomness
 }
 
 type User @entity {
@@ -107,9 +104,6 @@ type Lottery @entity {
   totalDeposit: Int!
   totalWithdraw: Int!
   totalWinnerClaim: Int!
-  totalRequestRandomness: Int!
-  totalFullfillRandomness: Int!
-  totalEndRound: Int!
 
   totalParticipants: BigInt!
   totalYields: BigInt!
@@ -130,7 +124,6 @@ type LotteryRound @entity {
   totalBtcStaked: BigInt!
   timestamp: BigInt!
   endRoundTx: Bytes!
-  randomnessId: Bytes!
 }
 
 type OrderAction @entity(immutable: true) {
