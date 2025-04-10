@@ -189,6 +189,24 @@ export function handleStartRound(event: Start): void {
   if (!lottery) {
     return;
   }
+
+  let user = User.load(event.transaction.from);
+  if (!user) {
+    user = createUser(event.transaction.from);
+  }
+
+  const lotteryAction = new LotteryAction(event.transaction.hash);
+  lotteryAction.txHash = event.transaction.hash;
+  lotteryAction.from = event.transaction.from;
+  lotteryAction.type = "StartRound";
+  lotteryAction.timestamp = event.block.timestamp;
+  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.round = lottery.currentRound;
+  lotteryAction.to = lottery.id;
+  lotteryAction.btcAmount = ZERO_BI;
+  lotteryAction.receiverAmount = 0;
+  lotteryAction.save();
+
   const lotteryRound = createLotteryRound(
     event.params.startTimestamp,
     event.params.round
@@ -197,8 +215,9 @@ export function handleStartRound(event: Start): void {
   lotteryRound.save();
   if (lottery.currentRound < event.params.round) {
     lottery.currentRound = lottery.currentRound.plus(BigInt.fromI32(1));
-    lottery.save();
   }
+  lottery.totalStartRound += 1;
+  lottery.save();
 }
 
 export function handleEndRound(event: EndRound): void {

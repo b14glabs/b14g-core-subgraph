@@ -115,6 +115,7 @@ export function createLottery(): Lottery {
   lottery.totalRequestRandomness = 0;
   lottery.totalFullfillRandomness = 0;
   lottery.totalEndRound = 0;
+  lottery.totalStartRound;
   lottery.save();
   return lottery;
 }

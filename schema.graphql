@@ -18,6 +18,7 @@ enum LotteryActionType {
   DepositNFTToLottery
   WithdrawNFTFromLottery
   WinnerClaimReward
+  StartRound
   EndRound
   RequestRandomness
   FullfillRandomness
@@ -110,6 +111,7 @@ type Lottery @entity {
   totalRequestRandomness: Int!
   totalFullfillRandomness: Int!
   totalEndRound: Int!
+  totalStartRound: Int!
 
   totalParticipants: BigInt!
   totalYields: BigInt!
