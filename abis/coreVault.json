@@ -5,6 +5,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "maxCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateMaxCap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "reward",
         "type": "uint256"
       },

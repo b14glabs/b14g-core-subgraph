@@ -49,6 +49,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     stats.totalCoreStaked = ZERO_BI;
     stats.totalDualCore = ZERO_BI;
     stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
     stats.save();
     //   stats.totalEarned = ZERO_BI
     //   stats.listOrder = []
@@ -209,6 +210,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     stats.totalStaker = 0;
     stats.totalCoreStaked = new BigInt(0);
     stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
     // stats.listOrder = []
   }
   stats.totalEarned = stats.totalEarned.plus(event.params.amount);

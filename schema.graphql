@@ -195,6 +195,7 @@ type Stats @entity {
   totalStaker: Int!
   totalCoreStaked: BigInt!
   totalDualCore: BigInt!
+  vaultMaxCap: BigInt!
   #   totalBtcStaked: BigInt!
   #   listOrder: [Order!]!
   totalEarned: BigInt!

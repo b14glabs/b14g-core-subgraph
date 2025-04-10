@@ -102,6 +102,8 @@ dataSources:
           handler: handleClaimReward
         - event: ReInvest(bytes)
           handler: handleReInvest
+        - event: UpdateMaxCap(uint256)
+          handler: handleMaxCapChange
   - kind: ethereum/contract
     name: Lottery
     network: core

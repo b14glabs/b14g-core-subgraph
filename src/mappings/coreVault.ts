@@ -20,6 +20,7 @@ import {
   WithdrawDirect,
   CoreVault,
   ClaimReward,
+  UpdateMaxCap,
 } from "../types/CoreVault/CoreVault";
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { B14G_ID } from "./helpers";
@@ -181,5 +182,14 @@ export function handleClaimReward(event: ClaimReward): void {
     vaultExchangeRate.save();
   }
   stats.totalCoreStaked = stats.totalCoreStaked.plus(event.params.reward);
+  stats.save();
+}
+
+export function handleMaxCapChange(event: UpdateMaxCap): void {
+  let stats = Stats.load(B14G_ID);
+  if (!stats) {
+    return;
+  }
+  stats.vaultMaxCap = event.params.maxCap;
   stats.save();
 }
