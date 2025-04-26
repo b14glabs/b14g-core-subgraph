@@ -6,12 +6,21 @@ enum OrderActionType {
     ClaimCoreForCoreHolder
 
 }
-enum VaultActionType{
-    StakeCoreToVault
-    RedeemNormallyCoreFromVault
-    RedeemInstantlyCoreFromVault
-    WithdrawCoreFromVault
-    ReInvestVault
+enum VaultActionType {
+  #  core vault
+  StakeCoreToVault
+  RedeemNormallyCoreFromVault
+  RedeemInstantlyCoreFromVault
+  WithdrawCoreFromVault
+  ReInvestVault
+
+  #  wbtc vault
+  StakeWbtc
+  RedeemWbtc
+  WithdrawWbtc
+  BorrowCore
+  RepayCore
+  CoreInvest
 }
 
 enum LotteryActionType {
@@ -61,6 +70,8 @@ type Vault @entity {
   totalInstantRedeemActions: Int!
   totalWithdrawActions: Int!
   totalReInvestActions: Int!
+  totalBorrowCoreActions: Int
+  totalRepayCoreActions: Int
   activities: [VaultAction!]! @derivedFrom(field: "to")
 }
 
@@ -156,6 +167,7 @@ type VaultAction @entity(immutable: true) {
   from: User!
   to: Vault!
   amount: BigInt!
+  rewardAmount: BigInt
   totalCoreStaked: BigInt!
 }
 
@@ -222,6 +234,11 @@ type VaultActionCount @entity {
   unbond: Int!
   withdrawdirect: Int!
   withdraw: Int!
+
+  wbtc: Int!
+  wbtcStake: Int!
+  wbtcRedeem: Int!
+  wbtcWithdraw: Int!
 }
 
 type LotteryActionCount @entity {

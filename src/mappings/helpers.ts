@@ -8,6 +8,7 @@ import {
   Stats,
   User,
   Vault,
+  VaultAction,
   VaultActionCount,
 } from "../types/schema";
 
@@ -16,6 +17,13 @@ export enum ORDER_ACTION {
   WITHDRAW,
   CLAIM_BTC,
   CLAIM_CORE,
+}
+
+export enum LENDING_VAULT_ACTION {
+  STAKE,
+  REDEEM,
+  WITHDRAW,
+  INVEST,
 }
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -27,6 +35,7 @@ export const B14G_ID = "b14g";
 export const MARKETPLACE = "0x04EA61C431F7934d51fEd2aCb2c5F942213f8967";
 export const LOTTERY = "0x606499355875Aafe39cF0910962f2BE4b16D5566";
 export const YIELD_BTC = "0xaC12840F51495F119290646824E503292607f679";
+export const LENDING_VAULT = "0xBFFa9F65254d8220f88ae1cd120273EaCc13147a";
 
 export function createUser(id: Bytes): User {
   let user = new User(id);
@@ -47,6 +56,10 @@ export function createUser(id: Bytes): User {
     vaultActionCount.unbond = 0;
     vaultActionCount.withdrawdirect = 0;
     vaultActionCount.withdraw = 0;
+    vaultActionCount.wbtc = 0;
+    vaultActionCount.wbtcStake = 0;
+    vaultActionCount.wbtcRedeem = 0;
+    vaultActionCount.wbtcWithdraw = 0;
     vaultActionCount.save();
   }
 
@@ -69,7 +82,6 @@ export function createUser(id: Bytes): User {
     stats.totalCoreStaked = ZERO_BI;
     stats.totalDualCore = ZERO_BI;
     stats.totalEarned = ZERO_BI;
-    stats.vaultMaxCap = ZERO_BI;
     //   stats.listOrder = []
   }
   stats.totalStaker += 1;
