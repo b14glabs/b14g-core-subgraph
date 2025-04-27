@@ -182,5 +182,5 @@ dataSources:
           handler: handleWithdraw
         - event: LendingInvest(uint256,bool,uint256)
           handler: handleLending
-        - event: CoreInvest(bytes)
-          handler: handleCoreInvest
+        # - event: CoreInvest(bytes)
+        #   handler: handleCoreInvest
