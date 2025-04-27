@@ -27,6 +27,10 @@ const lendingVaultContract = LendingVault.bind(
 );
 
 export function handleStake(event: Stake): void {
+  let vaultAsUser = User.load(Bytes.fromHexString(LENDING_VAULT));
+  if (!vaultAsUser) {
+    createUser(Bytes.fromHexString(LENDING_VAULT));
+  }
   let user = User.load(event.params.user);
   if (!user) {
     user = createUser(event.params.user);
