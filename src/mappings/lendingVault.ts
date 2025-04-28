@@ -17,13 +17,15 @@ import {
 import {
   B14G_ID,
   LENDING_VAULT,
+  LENDING_VAULT_MKP_STRATEGY,
   createUser,
   createVault,
   getId,
 } from "./helpers";
+import { MarketplaceStrategy } from "../types/LendingVault/MarketplaceStrategy";
 
-const lendingVaultContract = LendingVault.bind(
-  Address.fromString(LENDING_VAULT)
+const lendingMkpStrategyContract = MarketplaceStrategy.bind(
+  Address.fromString(LENDING_VAULT_MKP_STRATEGY)
 );
 
 export function handleStake(event: Stake): void {
@@ -193,7 +195,7 @@ export function handleCoreInvest(event: CoreInvest): void {
   action.txHash = event.transaction.hash;
   action.type = "CoreInvest";
   action.from = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
-  action.amount = lendingVaultContract.getTotalCoreReward();
+  action.amount = lendingMkpStrategyContract.totalStaked();
   action.to = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   action.totalCoreStaked = stats.totalCoreStaked;
 
