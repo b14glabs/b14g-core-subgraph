@@ -258,3 +258,12 @@ type YieldBTC @entity {
   user: User!
   order: Order!
 }
+
+type LendingVaultApy @entity {
+  id: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  apy: BigInt!
+  colendApy: BigInt!
+  boostApy: BigInt!
+}
