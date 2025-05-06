@@ -38,6 +38,11 @@ export const YIELD_BTC = "0xaC12840F51495F119290646824E503292607f679";
 export const LENDING_VAULT = "0x7EC127d873b6c11E1D10aAB94858fa5291e48C93";
 export const LENDING_VAULT_MKP_STRATEGY =
          "0xAab91070F57Db21cEb02aEF0D0fc9FA45CdC94a7";
+export const COLEND_POOL = "0x0CEa9F0F49F30d376390e480ba32f903B43B19C5"
+export const CORE_DEBT_TOKEN = "0xAc98BB397b8ba98FffDd0124Cdc50fA08d7C7a00"
+export const WBTC = "0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd"
+export const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
+export const PYTH = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729"
 
 export function createUser(id: Bytes): User {
   let user = new User(id);

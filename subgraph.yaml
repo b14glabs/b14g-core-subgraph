@@ -173,6 +173,12 @@ dataSources:
       abis:
         - name: LendingVault
           file: ./abis/lendingVault.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ColendPool
+          file: ./abis/aavePool.json
+        - name: Pyth
+          file: ./abis/pyth.json
         - name: MarketplaceStrategy
           file: ./abis/marketplaceStrategy.json
       eventHandlers:
@@ -186,3 +192,5 @@ dataSources:
           handler: handleLending
         - event: CoreInvest(bytes)
           handler: handleCoreInvest
+        - event: ClaimRewardFromStrategy(uint256)
+          handler: handleClaimRewardFromStrategy
