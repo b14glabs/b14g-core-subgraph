@@ -135,36 +135,19 @@ export function handleClaimRewardFromStrategy(
     .div(btcPrice.times(BigInt.fromString("10000000000")));
 
   // colend apy
-  const aTokenContract = ERC20.bind(lendingVaultContract.aStakeToken());
-  const totalWbtc = aTokenContract.balanceOf(Address.fromString(LENDING_VAULT));
-  const debt = debtToken.balanceOf(Address.fromString(LENDING_VAULT));
 
   const wbtcApr = colendPoolContract
     .getReserveData(Address.fromString(WBTC))
     .currentLiquidityRate.div(BigInt.fromString("1000000000"));
-  const borrowCoreApr = colendPoolContract
-    .getReserveData(Address.fromString(WCORE))
-    .currentVariableBorrowRate.div(BigInt.fromString("1000000000"));
-
   // Calculate APY
   const wbtcApy = calculateApy(wbtcApr);
-  const borrowApy = calculateApy(borrowCoreApr);
-  const wbtcEarningUsd = wbtcApy.times(btcPrice).times(totalWbtc);
-  const borrowUsd = borrowApy
-    .times(corePrice)
-    .times(debt)
-    .div(BigInt.fromString("10000000000"));
-  const colendApy = wbtcEarningUsd
-    .minus(borrowUsd)
-    .times(BigInt.fromString("10000").minus(vaultFee))
-    .div(BigInt.fromString("10000"))
-    .div(totalWbtc.times(btcPrice));
-  const apy = b14gApy.plus(colendApy);
+  const apy = (b14gApy.plus(wbtcApy)).times(BigInt.fromString("10000").minus(vaultFee))
+  .div(BigInt.fromString("10000"));
   const data = new LendingVaultApy(getId(event));
   data.apy = apy;
   data.blockNumber = event.block.number;
   data.timestamp = event.block.timestamp;
-  data.boostApy = apy.minus(wbtcApy)
+  data.boostApy = b14gApy;
   data.colendApy = wbtcApy;
   data.save();
 }
