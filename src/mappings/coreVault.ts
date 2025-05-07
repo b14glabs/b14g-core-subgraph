@@ -47,7 +47,7 @@ export function handleStake(event: Stake): void {
 
   let user = User.load(event.params.user);
   if (user === null) {
-    user = createUser(event.params.user);
+    user = createUser(event.params.user, event.block.timestamp);
   }
 
   let vaultActionCount = VaultActionCount.load(user.id);

@@ -19,25 +19,23 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     if (event.params.from.toHexString() != ADDRESS_ZERO) {
-        let user = User.load(event.params.from);
-        if (user === null) {
-            user = createUser(event.params.from);    
-
-        }
-        user.dualCoreBalance = user.dualCoreBalance.minus(event.params.value)
-        user.save()
-        vault.totalStaked = vault.totalStaked.minus(event.params.value)
-
+      let user = User.load(event.params.from);
+      if (user === null) {
+        user = createUser(event.params.from, event.block.timestamp);
+      }
+      user.dualCoreBalance = user.dualCoreBalance.minus(event.params.value);
+      user.save();
+      vault.totalStaked = vault.totalStaked.minus(event.params.value);
     }
     if (event.params.to.toHexString() != ADDRESS_ZERO) {
-        let user = User.load(event.params.to);
+      let user = User.load(event.params.to);
 
-        if (user === null) {
-            user = createUser(event.params.to);
-        }
-        user.dualCoreBalance = user.dualCoreBalance.plus(event.params.value)
-        user.save()
-        vault.totalStaked = vault.totalStaked.plus(event.params.value)
+      if (user === null) {
+        user = createUser(event.params.to, event.block.timestamp);
+      }
+      user.dualCoreBalance = user.dualCoreBalance.plus(event.params.value);
+      user.save();
+      vault.totalStaked = vault.totalStaked.plus(event.params.value);
     }
     vault.save()
 }
