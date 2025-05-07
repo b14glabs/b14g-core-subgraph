@@ -156,11 +156,14 @@ export function handleStake(event: Stake): void {
   const reverseData = colendPoolContract.getReserveData(Address.fromString(LENDING_VAULT))
   let vaultAsUser = User.load(Bytes.fromHexString(LENDING_VAULT));
   if (!vaultAsUser) {
-    createUser(Bytes.fromHexString(LENDING_VAULT.toLowerCase()));
+    createUser(
+      Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+      event.block.timestamp
+    );
   }
   let user = User.load(event.params.user);
   if (!user) {
-    user = createUser(event.params.user);
+    user = createUser(event.params.user, event.block.timestamp);
   }
   const actionCount = VaultActionCount.load(user.id);
   if (!actionCount) {

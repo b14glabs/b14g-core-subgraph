@@ -43,6 +43,7 @@ type User @entity {
   lotteryActions: [LotteryAction!]! @derivedFrom(field: "from")
   yieldBtcs: [YieldBTC!]! @derivedFrom(field: "user")
   totalYeildDeposited: BigInt!
+  createdAt: BigInt!
 
   # vault
   vaultActionCount: VaultActionCount! @derivedFrom(field: "user")

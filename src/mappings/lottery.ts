@@ -192,7 +192,7 @@ export function handleStartRound(event: Start): void {
 
   let user = User.load(event.transaction.from);
   if (!user) {
-    user = createUser(event.transaction.from);
+    user = createUser(event.transaction.from, event.block.timestamp);
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
@@ -228,7 +228,7 @@ export function handleEndRound(event: EndRound): void {
 
   let user = User.load(event.transaction.from);
   if (!user) {
-    user = createUser(event.transaction.from);
+    user = createUser(event.transaction.from, event.block.timestamp);
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
@@ -297,7 +297,7 @@ export function handleRequestRandomness(event: RequestRandomness): void {
 
   let user = User.load(event.transaction.from);
   if (!user) {
-    user = createUser(event.transaction.from);
+    user = createUser(event.transaction.from, event.block.timestamp);
   }
 
   const round = lottery.currentRound;
@@ -333,7 +333,7 @@ export function handleFullFillRandomness(event: FullfillRandomness): void {
 
   let user = User.load(event.transaction.from);
   if (!user) {
-    user = createUser(event.transaction.from);
+    user = createUser(event.transaction.from, event.block.timestamp);
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);

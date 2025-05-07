@@ -59,7 +59,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
 
   let user = User.load(event.params.from);
   if (user === null) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
 
   let order = new Order(event.params.rewardReceiver) as Order;
@@ -107,7 +107,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
 
   let user = User.load(event.params.from);
   if (user === null) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
   let orderActionCount = OrderActionCount.load(
     event.params.receiver.concat(user.id)
@@ -197,7 +197,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
 
   let user = User.load(event.params.from);
   if (!user) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
 
   orderAction.from = event.params.from;
