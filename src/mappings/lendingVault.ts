@@ -317,6 +317,8 @@ export function handleLending(event: LendingInvest): void {
     }
   }
 
+  lendingVault.totalActions += 1;
+
   lendingVault.save();
   action.save();
 }
