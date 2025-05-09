@@ -270,7 +270,7 @@ type LendingVaultApy @entity {
 }
 
 type TurnRoundCapture @entity(immutable: true) {
-  id: Bytes!
+  id: ID!
   date: BigInt!
   coreDebt: BigInt!
 }
