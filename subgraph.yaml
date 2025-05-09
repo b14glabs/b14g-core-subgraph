@@ -194,3 +194,25 @@ dataSources:
           handler: handleCoreInvest
         - event: ClaimRewardFromStrategy(uint256)
           handler: handleClaimRewardFromStrategy
+  - kind: ethereum/contract
+    name: CandidateHub
+    network: core
+    source:
+      address: '0x0000000000000000000000000000000000001005'
+      abi: CandidateHub
+      startBlock: 24169296
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/candidateHub.ts
+      entities:
+        - CandidateHub
+      abis:
+        - name: CandidateHub
+          file: ./abis/candidateHub.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: turnedRound(uint256)
+          handler: handleCapture
