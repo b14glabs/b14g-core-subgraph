@@ -268,9 +268,3 @@ type LendingVaultApy @entity {
   colendApy: BigInt!
   boostApy: BigInt!
 }
-
-type TurnRoundCapture @entity(immutable: true) {
-  id: ID!
-  date: BigInt!
-  coreDebt: BigInt!
-}
