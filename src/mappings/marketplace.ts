@@ -49,6 +49,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     stats.totalCoreStaked = ZERO_BI;
     stats.totalDualCore = ZERO_BI;
     stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
     stats.save();
     //   stats.totalEarned = ZERO_BI
     //   stats.listOrder = []
@@ -58,7 +59,7 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
 
   let user = User.load(event.params.from);
   if (user === null) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
 
   let order = new Order(event.params.rewardReceiver) as Order;
@@ -106,7 +107,7 @@ export function handleUserStake(event: StakeCoreProxy): void {
 
   let user = User.load(event.params.from);
   if (user === null) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
   let orderActionCount = OrderActionCount.load(
     event.params.receiver.concat(user.id)
@@ -196,7 +197,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
 
   let user = User.load(event.params.from);
   if (!user) {
-    user = createUser(event.params.from);
+    user = createUser(event.params.from, event.block.timestamp);
   }
 
   orderAction.from = event.params.from;
@@ -209,6 +210,7 @@ export function handleClaimProxy(event: ClaimProxy): void {
     stats.totalStaker = 0;
     stats.totalCoreStaked = new BigInt(0);
     stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
     // stats.listOrder = []
   }
   stats.totalEarned = stats.totalEarned.plus(event.params.amount);

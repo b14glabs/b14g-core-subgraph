@@ -4,6 +4,8 @@ import {
   ClaimRewards,
   Deposit,
   EndRound,
+  FullfillRandomness,
+  RequestRandomness,
   Start,
   Withdraw,
 } from "../types/Lottery/Lottery";
@@ -187,6 +189,24 @@ export function handleStartRound(event: Start): void {
   if (!lottery) {
     return;
   }
+
+  let user = User.load(event.transaction.from);
+  if (!user) {
+    user = createUser(event.transaction.from, event.block.timestamp);
+  }
+
+  const lotteryAction = new LotteryAction(event.transaction.hash);
+  lotteryAction.txHash = event.transaction.hash;
+  lotteryAction.from = event.transaction.from;
+  lotteryAction.type = "StartRound";
+  lotteryAction.timestamp = event.block.timestamp;
+  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.round = lottery.currentRound;
+  lotteryAction.to = lottery.id;
+  lotteryAction.btcAmount = ZERO_BI;
+  lotteryAction.receiverAmount = 0;
+  lotteryAction.save();
+
   const lotteryRound = createLotteryRound(
     event.params.startTimestamp,
     event.params.round
@@ -195,8 +215,9 @@ export function handleStartRound(event: Start): void {
   lotteryRound.save();
   if (lottery.currentRound < event.params.round) {
     lottery.currentRound = lottery.currentRound.plus(BigInt.fromI32(1));
-    lottery.save();
   }
+  lottery.totalStartRound += 1;
+  lottery.save();
 }
 
 export function handleEndRound(event: EndRound): void {
@@ -204,6 +225,28 @@ export function handleEndRound(event: EndRound): void {
   if (!lottery) {
     return;
   }
+
+  let user = User.load(event.transaction.from);
+  if (!user) {
+    user = createUser(event.transaction.from, event.block.timestamp);
+  }
+
+  const lotteryAction = new LotteryAction(event.transaction.hash);
+  lotteryAction.txHash = event.transaction.hash;
+  lotteryAction.from = event.transaction.from;
+  lotteryAction.type = "EndRound";
+  lotteryAction.timestamp = event.block.timestamp;
+  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.round = lottery.currentRound;
+  lotteryAction.to = lottery.id;
+  lotteryAction.btcAmount = ZERO_BI;
+  lotteryAction.receiverAmount = 0;
+  lotteryAction.save();
+
+  lottery.totalActions += 1;
+  lottery.totalEndRound += 1;
+  lottery.save();
+
   const round = lottery.currentRound;
   const lotteryRound = LotteryRound.load(round.toString());
   if (!lotteryRound) {
@@ -244,4 +287,68 @@ export function handleClaimRewards(event: ClaimRewards): void {
     );
   }
   lotteryRound.save();
+}
+
+export function handleRequestRandomness(event: RequestRandomness): void {
+  let lottery = Lottery.load(Bytes.fromHexString(LOTTERY.toLowerCase()));
+  if (!lottery) {
+    return;
+  }
+
+  let user = User.load(event.transaction.from);
+  if (!user) {
+    user = createUser(event.transaction.from, event.block.timestamp);
+  }
+
+  const round = lottery.currentRound;
+  const lotteryRound = LotteryRound.load(round.toString());
+  if (!lotteryRound) {
+    return;
+  }
+  lotteryRound.randomnessId = event.params.randomnessId;
+  lotteryRound.save();
+
+  const lotteryAction = new LotteryAction(event.transaction.hash);
+  lotteryAction.txHash = event.transaction.hash;
+  lotteryAction.from = event.transaction.from;
+  lotteryAction.type = "RequestRandomness";
+  lotteryAction.timestamp = event.block.timestamp;
+  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.round = lottery.currentRound;
+  lotteryAction.to = lottery.id;
+  lotteryAction.btcAmount = ZERO_BI;
+  lotteryAction.receiverAmount = 0;
+  lotteryAction.save();
+
+  lottery.totalActions += 1;
+  lottery.totalRequestRandomness += 1;
+  lottery.save();
+}
+
+export function handleFullFillRandomness(event: FullfillRandomness): void {
+  let lottery = Lottery.load(Bytes.fromHexString(LOTTERY.toLowerCase()));
+  if (!lottery) {
+    return;
+  }
+
+  let user = User.load(event.transaction.from);
+  if (!user) {
+    user = createUser(event.transaction.from, event.block.timestamp);
+  }
+
+  const lotteryAction = new LotteryAction(event.transaction.hash);
+  lotteryAction.txHash = event.transaction.hash;
+  lotteryAction.from = event.transaction.from;
+  lotteryAction.type = "FullfillRandomness";
+  lotteryAction.timestamp = event.block.timestamp;
+  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.round = lottery.currentRound;
+  lotteryAction.to = lottery.id;
+  lotteryAction.btcAmount = ZERO_BI;
+  lotteryAction.receiverAmount = 0;
+  lotteryAction.save();
+
+  lottery.totalActions += 1;
+  lottery.totalFullfillRandomness += 1;
+  lottery.save();
 }

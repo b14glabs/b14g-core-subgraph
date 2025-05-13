@@ -6,18 +6,31 @@ enum OrderActionType {
     ClaimCoreForCoreHolder
 
 }
-enum VaultActionType{
-    StakeCoreToVault
-    RedeemNormallyCoreFromVault
-    RedeemInstantlyCoreFromVault
-    WithdrawCoreFromVault
-    ReInvestVault
+enum VaultActionType {
+  #  core vault
+  StakeCoreToVault
+  RedeemNormallyCoreFromVault
+  RedeemInstantlyCoreFromVault
+  WithdrawCoreFromVault
+  ReInvestVault
+
+  #  wbtc vault
+  StakeWbtc
+  RedeemWbtc
+  WithdrawWbtc
+  BorrowCore
+  RepayCore
+  CoreInvest
 }
 
 enum LotteryActionType {
   DepositNFTToLottery
   WithdrawNFTFromLottery
   WinnerClaimReward
+  StartRound
+  EndRound
+  RequestRandomness
+  FullfillRandomness
 }
 
 type User @entity {
@@ -30,6 +43,7 @@ type User @entity {
   lotteryActions: [LotteryAction!]! @derivedFrom(field: "from")
   yieldBtcs: [YieldBTC!]! @derivedFrom(field: "user")
   totalYeildDeposited: BigInt!
+  createdAt: BigInt!
 
   # vault
   vaultActionCount: VaultActionCount! @derivedFrom(field: "user")
@@ -57,6 +71,8 @@ type Vault @entity {
   totalInstantRedeemActions: Int!
   totalWithdrawActions: Int!
   totalReInvestActions: Int!
+  totalBorrowCoreActions: Int
+  totalRepayCoreActions: Int
   activities: [VaultAction!]! @derivedFrom(field: "to")
 }
 
@@ -104,6 +120,10 @@ type Lottery @entity {
   totalDeposit: Int!
   totalWithdraw: Int!
   totalWinnerClaim: Int!
+  totalRequestRandomness: Int!
+  totalFullfillRandomness: Int!
+  totalEndRound: Int!
+  totalStartRound: Int!
 
   totalParticipants: BigInt!
   totalYields: BigInt!
@@ -124,6 +144,7 @@ type LotteryRound @entity {
   totalBtcStaked: BigInt!
   timestamp: BigInt!
   endRoundTx: Bytes!
+  randomnessId: Bytes!
 }
 
 type OrderAction @entity(immutable: true) {
@@ -147,6 +168,7 @@ type VaultAction @entity(immutable: true) {
   from: User!
   to: Vault!
   amount: BigInt!
+  rewardAmount: BigInt
   totalCoreStaked: BigInt!
 }
 
@@ -186,6 +208,7 @@ type Stats @entity {
   totalStaker: Int!
   totalCoreStaked: BigInt!
   totalDualCore: BigInt!
+  vaultMaxCap: BigInt!
   #   totalBtcStaked: BigInt!
   #   listOrder: [Order!]!
   totalEarned: BigInt!
@@ -212,6 +235,11 @@ type VaultActionCount @entity {
   unbond: Int!
   withdrawdirect: Int!
   withdraw: Int!
+
+  wbtc: Int!
+  wbtcStake: Int!
+  wbtcRedeem: Int!
+  wbtcWithdraw: Int!
 }
 
 type LotteryActionCount @entity {
@@ -230,4 +258,13 @@ type YieldBTC @entity {
   isDeposited: Boolean!
   user: User!
   order: Order!
+}
+
+type LendingVaultApy @entity {
+  id: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  apy: BigInt!
+  colendApy: BigInt!
+  boostApy: BigInt!
 }
