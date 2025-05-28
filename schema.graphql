@@ -44,6 +44,7 @@ type User @entity {
   yieldBtcs: [YieldBTC!]! @derivedFrom(field: "user")
   totalYeildDeposited: BigInt!
   createdAt: BigInt!
+  orders: [Order!]! @derivedFrom(field: "user")
 
   # vault
   vaultActionCount: VaultActionCount! @derivedFrom(field: "user")
@@ -79,6 +80,7 @@ type Vault @entity {
 type Order @entity {
   id: Bytes!
   owner: Bytes!
+  user: User!
   btcAmount: BigInt!
   unlockTime: Int
   validator: Bytes
