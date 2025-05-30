@@ -23,6 +23,7 @@ export function handleBTCStaked(event: delegated): void {
       .toU32();
     order.validator = event.params.candidate;
     order.bitcoinLockTx = event.params.txid;
+    order.confirmTimestamp = event.block.timestamp;
     order.save();
     user.save();
   }

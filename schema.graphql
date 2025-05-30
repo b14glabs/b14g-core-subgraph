@@ -84,6 +84,7 @@ type Order @entity {
   btcAmount: BigInt!
   unlockTime: Int
   validator: Bytes
+  confirmTimestamp: BigInt
   bitcoinLockTx: Bytes!
   fee: BigInt!
   rewardSharingPortion: BigInt!
