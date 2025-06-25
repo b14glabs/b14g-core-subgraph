@@ -256,6 +256,7 @@ export function handleWithdraw(event: Withdraw): void {
   action.type = "WithdrawWbtc";
   action.from = event.params.user;
   action.amount = event.params.amount;
+  action.rewardAmount = event.params.coreReward;
   action.to = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   action.totalCoreStaked = stats.totalCoreStaked;
 
