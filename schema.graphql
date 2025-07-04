@@ -58,7 +58,7 @@ type User @entity {
   #lottery
   lotteryActionCount: LotteryActionCount! @derivedFrom(field: "user")
   #fairShare
-  fairShareActionCount: FairShareActionCount! @derivedFrom(field: "user")
+  fairShareActionCount: FairShareActionCount @derivedFrom(field: "user")
 
   totalValidOrder: Int!
 

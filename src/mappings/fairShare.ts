@@ -148,7 +148,6 @@ export function handleClaimReward(event: ClaimReward): void {
         fairShareActionCount.claimDualCore = 0;
         fairShareActionCount.unbond = 0;
         fairShareActionCount.save();
-        return;
     }
     fairShareActionCount.total += 1;
     fairShareActionCount.claimDualCore += 1;
