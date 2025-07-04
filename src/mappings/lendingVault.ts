@@ -37,7 +37,7 @@ import {
   WCORE,
   createUser,
   createVault,
-  getId,
+  getId, createTransaction,
 } from "./helpers";
 import { MarketplaceStrategy } from "../types/LendingVault/MarketplaceStrategy";
 import { ColendPool } from "../types/LendingVault/ColendPool";
@@ -180,6 +180,8 @@ export function handleStake(event: Stake): void {
   }
 
   const action = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
@@ -215,6 +217,8 @@ export function handleRedeem(event: Redeem): void {
   }
 
   const action = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
@@ -250,6 +254,10 @@ export function handleWithdraw(event: Withdraw): void {
   }
 
   const action = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  action.transaction = getId(event);
+  action.blockNumber = event.block.number;
+  action.timestamp = event.block.timestamp;
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
@@ -281,6 +289,8 @@ export function handleLending(event: LendingInvest): void {
   }
 
   const action = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, Bytes.fromHexString(LENDING_VAULT.toLowerCase()));
+  action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
@@ -321,6 +331,8 @@ export function handleCoreInvest(event: CoreInvest): void {
   }
 
   const action = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, Bytes.fromHexString(LENDING_VAULT.toLowerCase()));
+  action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;

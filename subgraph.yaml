@@ -3,6 +3,11 @@ description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
+features:
+  - grafting
+graft:
+  base: QmUS5pwcGZJYSmC4umZScAk9T7BL2V5zV2dSFP8RVNTtjK
+  block:  25900000
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
@@ -41,10 +46,12 @@ dataSources:
       abis:
         - name: Marketplace
           file: ./abis/marketplace.json
+        - name: FairShareOrder
+          file: ./abis/fairShareOrder.json
       eventHandlers:
         - event: CreateRewardReceiver(indexed address,indexed address,uint256,uint256)
           handler: handleNewOrder
-          # calls: 
+          # calls:
           #   Marketplace.fee: Marketplace[event.address].fee()
         - event: StakeCoreProxy(indexed address,indexed address,indexed address,uint256)
           handler: handleUserStake
@@ -194,3 +201,27 @@ dataSources:
           handler: handleCoreInvest
         - event: ClaimRewardFromStrategy(uint256)
           handler: handleClaimRewardFromStrategy
+  - kind: ethereum/contract
+    name: FairShare
+    network: core
+    source:
+      address: '0x13E3eC65EFeB0A4583c852F4FaF6b2Fb31Ff04b1'
+      abi: FairShareOrder
+      startBlock: 25900000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/fairShare.ts
+      entities:
+        - LendingVault
+      abis:
+        - name: FairShareOrder
+          file: ./abis/fairShareOrder.json
+      eventHandlers:
+#        - event: WithdrawCoreReward(indexed address,uint256)
+#          handler: handleWithdrawCoreReward
+#        - event: UnbondReward(indexed address,uint256,uint256)
+#          handler: handleUnbondReward
+        - event: ClaimReward(indexed address,uint256)
+          handler: handleClaimReward
