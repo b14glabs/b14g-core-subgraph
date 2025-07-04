@@ -95,6 +95,7 @@ export function createUser(id: Bytes, timestamp: BigInt): User {
     stats.totalCoreStaked = ZERO_BI;
     stats.totalDualCore = ZERO_BI;
     stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
     //   stats.listOrder = []
   }
   stats.totalStaker += 1;

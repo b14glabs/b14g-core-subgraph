@@ -21,6 +21,11 @@ enum VaultActionType {
   BorrowCore
   RepayCore
   CoreInvest
+
+  # FairShare vault
+  ClaimReward
+  UnbondReward
+  WithdrawCoreReward
 }
 
 enum LotteryActionType {
@@ -52,6 +57,8 @@ type User @entity {
   orderActionCount: [OrderActionCount!]! @derivedFrom(field: "user")
   #lottery
   lotteryActionCount: LotteryActionCount! @derivedFrom(field: "user")
+  #fairShare
+  fairShareActionCount: FairShareActionCount! @derivedFrom(field: "user")
 
   totalValidOrder: Int!
 
@@ -249,6 +256,16 @@ type OrderActionCount @entity {
   claimCore: Int!
   claimBtc: Int!
 }
+
+type FairShareActionCount @entity{
+  id: Bytes!
+  user: User!
+  total: Int!
+  claimDualCore: Int!
+  unbond: Int!
+  withdrawCore: Int
+}
+
 
 type VaultActionCount @entity {
   id: Bytes!
