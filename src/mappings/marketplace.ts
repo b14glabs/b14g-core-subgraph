@@ -72,14 +72,14 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
 
   user = User.load(event.params.from);
   if (user === null) {
-    user = createUser(event.params.from, event.block.timestamp);
+    createUser(event.params.from, event.block.timestamp);
   }
 
 
 
   let order = new Order(event.params.rewardReceiver) as Order;
   order.owner = event.params.from;
-  order.user = user.id;
+  order.user = from;
   order.createdAtTimestamp = event.block.timestamp;
   order.createdAtBlockNumber = event.block.number;
   order.coreEarned = ZERO_BI;
