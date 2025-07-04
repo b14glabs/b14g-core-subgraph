@@ -7,6 +7,7 @@ import {
   VaultActionCount,
 } from "../types/schema";
 import {
+  createTransaction,
   createUser,
   DUAL_CORE_VAULT,
   getId,
@@ -29,6 +30,8 @@ const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT));
 
 export function handleStake(event: Stake): void {
   let vaultAction = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
   vaultAction.timestamp = event.block.timestamp;
   vaultAction.txHash = event.transaction.hash;
@@ -61,6 +64,8 @@ export function handleStake(event: Stake): void {
 
 export function handleWithdrawDirect(event: WithdrawDirect): void {
   let vaultAction = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
   vaultAction.timestamp = event.block.timestamp;
   vaultAction.txHash = event.transaction.hash;
@@ -89,6 +94,8 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
 
 export function handleUnbond(event: Unbond): void {
   let vaultAction = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
   vaultAction.timestamp = event.block.timestamp;
   vaultAction.txHash = event.transaction.hash;
@@ -115,6 +122,8 @@ export function handleUnbond(event: Unbond): void {
 
 export function handleStakeWithdraw(event: Withdraw): void {
   let vaultAction = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
   vaultAction.timestamp = event.block.timestamp;
   vaultAction.txHash = event.transaction.hash;
@@ -146,6 +155,8 @@ export function handleStakeWithdraw(event: Withdraw): void {
 
 export function handleReInvest(event: ReInvest): void {
   let vaultAction = new VaultAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.transaction.from);
+  vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
   vaultAction.timestamp = event.block.timestamp;
   vaultAction.txHash = event.transaction.hash;

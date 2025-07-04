@@ -9,7 +9,7 @@ import {
   User,
   Vault,
   VaultAction,
-  VaultActionCount,
+  VaultActionCount, Transaction
 } from "../types/schema";
 
 export enum ORDER_ACTION {
@@ -35,6 +35,8 @@ export const MARKETPLACE_STRATEGY_ADDRESS =
   "0xcd6D74b6852FbeEb1187ec0E231aB91E700eC3BA";
 
 export const MARKETPLACE = "0x04EA61C431F7934d51fEd2aCb2c5F942213f8967";
+export const FAIR_SHARE_ORDER = "0x13E3eC65EFeB0A4583c852F4FaF6b2Fb31Ff04b1";
+
 export const LOTTERY = "0x606499355875Aafe39cF0910962f2BE4b16D5566";
 export const YIELD_BTC = "0xaC12840F51495F119290646824E503292607f679";
 
@@ -111,6 +113,15 @@ export function createVault(id: string): Vault {
   vault.totalReInvestActions = 0;
   vault.save();
   return vault;
+}
+
+export function createTransaction(id: Bytes, blockNumber: BigInt, timestamp: BigInt, from: Bytes): Transaction {
+    let transaction = new Transaction(id);
+    transaction.blockNumber = blockNumber;
+    transaction.timestamp = timestamp;
+    transaction.from = from;
+    transaction.save()
+    return transaction;
 }
 
 export function createLotteryActionCount(id: Bytes): LotteryActionCount {

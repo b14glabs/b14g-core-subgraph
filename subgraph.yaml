@@ -41,10 +41,12 @@ dataSources:
       abis:
         - name: Marketplace
           file: ./abis/marketplace.json
+        - name: FairShareOrder
+          file: ./abis/fairShareOrder.json
       eventHandlers:
         - event: CreateRewardReceiver(indexed address,indexed address,uint256,uint256)
           handler: handleNewOrder
-          # calls: 
+          # calls:
           #   Marketplace.fee: Marketplace[event.address].fee()
         - event: StakeCoreProxy(indexed address,indexed address,indexed address,uint256)
           handler: handleUserStake

@@ -26,20 +26,28 @@ import {
   ADDRESS_ZERO,
   LOTTERY,
   createLottery,
-  YIELD_BTC,
+  YIELD_BTC, createTransaction, FAIR_SHARE_ORDER,
 } from "./helpers";
 import { Yield } from "../types/Yield/Yield";
+import {FairShareOrder} from "../types/Marketplace/FairShareOrder";
 
 let marketplace = Marketplace.bind(Address.fromString(MARKETPLACE));
 let yieldContract = Yield.bind(Address.fromString(YIELD_BTC.toLowerCase()));
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
+  let from = event.params.from;
+  if(event.params.from.toHexString()==FAIR_SHARE_ORDER){
+    let fairShareOrder = FairShareOrder.bind(event.params.from);
+    from  = fairShareOrder.getOwnerOfReceiver(event.params.rewardReceiver)
+  }
   let orderAction = new OrderAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, from);
+  orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
   orderAction.txHash = event.transaction.hash;
   orderAction.type = "CreateOrder";
-  orderAction.from = event.params.from;
+  orderAction.from = from;
   orderAction.order = event.params.rewardReceiver;
 
   let stats = Stats.load(B14G_ID);
@@ -57,10 +65,17 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   orderAction.totalCoreStaked = stats.totalCoreStaked;
   orderAction.save();
 
-  let user = User.load(event.params.from);
+  let user = User.load(from);
+  if (user === null) {
+    createUser(from, event.block.timestamp);
+  }
+
+  user = User.load(event.params.from);
   if (user === null) {
     user = createUser(event.params.from, event.block.timestamp);
   }
+
+
 
   let order = new Order(event.params.rewardReceiver) as Order;
   order.owner = event.params.from;
@@ -84,12 +99,19 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   order.totalActions = 1;
   order.roundReward = ZERO_BI;
   order.updatedRound = ZERO_BI;
+  if(from.notEqual(event.params.from)){
+    order.type= "FAIR_SHARE_ORDER"
+  }else{
+    order.type= "MERGE_ORDER"
+  }
   order.save();
   // stats.listOrder = stats.listOrder.concat([order.id])
 }
 
 export function handleUserStake(event: StakeCoreProxy): void {
   let orderAction = new OrderAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.from);
+  orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
   orderAction.txHash = event.transaction.hash;
@@ -145,6 +167,8 @@ export function handleUserStake(event: StakeCoreProxy): void {
 
 export function handleUserWithdraw(event: StakeCoreProxy): void {
   let orderAction = new OrderAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.from);
+  orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
   orderAction.txHash = event.transaction.hash;
@@ -189,6 +213,8 @@ export function handleClaimProxy(event: ClaimProxy): void {
     return;
   }
   let orderAction = new OrderAction(getId(event));
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.from);
+  orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
   orderAction.txHash = event.transaction.hash;
