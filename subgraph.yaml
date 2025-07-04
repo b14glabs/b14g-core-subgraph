@@ -3,6 +3,11 @@ description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
+features:
+  - grafting
+graft:
+  base: QmbY8t3jBHt9SQsW1PahaKzU5CWmdrrPqw22bnEvPJMgdQ
+  block:  25900000
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken

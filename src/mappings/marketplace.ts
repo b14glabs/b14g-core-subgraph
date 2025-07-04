@@ -36,9 +36,9 @@ let yieldContract = Yield.bind(Address.fromString(YIELD_BTC.toLowerCase()));
 
 export function handleNewOrder(event: CreateRewardReceiver): void {
   let from = event.params.from;
-  if(event.params.from.toHexString()==FAIR_SHARE_ORDER){
+  if(event.params.from.toHexString()==FAIR_SHARE_ORDER.toLowerCase()){
     let fairShareOrder = FairShareOrder.bind(event.params.from);
-    from  = fairShareOrder.getOwnerOfReceiver(event.params.rewardReceiver)
+    from = fairShareOrder.getOwnerOfReceiver(event.params.rewardReceiver)
   }
   let orderAction = new OrderAction(getId(event));
   createTransaction(getId(event), event.block.number, event.block.timestamp, from);
