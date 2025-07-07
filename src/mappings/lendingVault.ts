@@ -229,7 +229,7 @@ export function handleRedeem(event: Redeem): void {
   action.rewardAmount = event.params.rewardAmount;
   action.to = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   action.totalCoreStaked = stats.totalCoreStaked;
-  if (event.params.stakedAmount === ZERO_BI) {
+  if (event.params.stakedAmount == ZERO_BI) {
     action.type = "ClaimReward";
     actionCount.wbtcClaimReward = actionCount.wbtcClaimReward
       ? actionCount.wbtcClaimReward + 1
