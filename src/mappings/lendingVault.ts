@@ -231,14 +231,18 @@ export function handleRedeem(event: Redeem): void {
   action.totalCoreStaked = stats.totalCoreStaked;
   if (event.params.stakedAmount === ZERO_BI) {
     action.type = "ClaimReward";
+    actionCount.wbtcClaimReward = actionCount.wbtcClaimReward
+      ? actionCount.wbtcClaimReward + 1
+      : 1;
+    lendingVault.totalClaimRewardActons += 1;
   } else {
     action.type = "RedeemWbtc";
+    actionCount.wbtcRedeem += 1;
+    lendingVault.totalUnbondActions += 1;
   }
 
-  lendingVault.totalUnbondActions += 1;
   lendingVault.totalActions += 1;
   actionCount.wbtc += 1;
-  actionCount.wbtcRedeem += 1;
 
   actionCount.save();
   lendingVault.save();

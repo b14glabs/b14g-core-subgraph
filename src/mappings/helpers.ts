@@ -73,6 +73,7 @@ export function createUser(id: Bytes, timestamp: BigInt): User {
     vaultActionCount.wbtcStake = 0;
     vaultActionCount.wbtcRedeem = 0;
     vaultActionCount.wbtcWithdraw = 0;
+    vaultActionCount.wbtcClaimReward = 0;
     vaultActionCount.save();
   }
 
@@ -112,6 +113,7 @@ export function createVault(id: string): Vault {
   vault.totalUnbondActions = 0;
   vault.totalWithdrawActions = 0;
   vault.totalReInvestActions = 0;
+  vault.totalClaimRewardActons = 0;
   vault.save();
   return vault;
 }

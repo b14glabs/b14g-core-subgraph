@@ -94,12 +94,14 @@ type Vault @entity {
   totalInstantRedeemActions: Int!
   totalWithdrawActions: Int!
   totalReInvestActions: Int!
+  totalClaimRewardActons: Int
   totalBorrowCoreActions: Int
   totalRepayCoreActions: Int
   activities: [VaultAction!]! @derivedFrom(field: "to")
 }
-enum OrderType{
-  MERGE_ORDER,
+
+enum OrderType {
+  MERGE_ORDER
   FAIR_SHARE_ORDER
 }
 type Order @entity {
@@ -258,7 +260,7 @@ type OrderActionCount @entity {
   claimBtc: Int!
 }
 
-type FairShareActionCount @entity{
+type FairShareActionCount @entity {
   id: Bytes!
   user: User!
   total: Int!
@@ -266,7 +268,6 @@ type FairShareActionCount @entity{
   unbond: Int!
   withdrawCore: Int
 }
-
 
 type VaultActionCount @entity {
   id: Bytes!
@@ -282,6 +283,7 @@ type VaultActionCount @entity {
   wbtcStake: Int!
   wbtcRedeem: Int!
   wbtcWithdraw: Int!
+  wbtcClaimReward: Int
 }
 
 type LotteryActionCount @entity {
