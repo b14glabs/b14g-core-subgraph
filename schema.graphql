@@ -21,6 +21,11 @@ enum VaultActionType {
   BorrowCore
   RepayCore
   CoreInvest
+
+  # FairShare vault
+  ClaimReward
+  UnbondReward
+  WithdrawCoreReward
 }
 
 enum LotteryActionType {
@@ -52,9 +57,25 @@ type User @entity {
   orderActionCount: [OrderActionCount!]! @derivedFrom(field: "user")
   #lottery
   lotteryActionCount: LotteryActionCount! @derivedFrom(field: "user")
+  #fairShare
+  fairShareActionCount: FairShareActionCount @derivedFrom(field: "user")
 
   totalValidOrder: Int!
+
+  transactions: [Transaction!]! @derivedFrom(field: "from")
 }
+
+type Transaction @entity(immutable: true){
+  id: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  from: User!
+  vaultAction: VaultAction @derivedFrom(field: "transaction")
+  orderAction:  OrderAction @derivedFrom(field: "transaction")
+  lotteryActions: LotteryAction @derivedFrom(field: "transaction")
+
+}
+
 
 type StakedInOrder @entity {
   id: Bytes! #orderId+userId
@@ -76,7 +97,10 @@ type Vault @entity {
   totalRepayCoreActions: Int
   activities: [VaultAction!]! @derivedFrom(field: "to")
 }
-
+enum OrderType{
+  MERGE_ORDER,
+  FAIR_SHARE_ORDER
+}
 type Order @entity {
   id: Bytes!
   owner: Bytes!
@@ -109,6 +133,7 @@ type Order @entity {
   yieldBtc: YieldBTC! @derivedFrom(field: "order")
   roundReward: BigInt!
   updatedRound: BigInt!
+  type: OrderType!
 }
 
 type Lottery @entity {
@@ -155,6 +180,7 @@ type OrderAction @entity(immutable: true) {
   txHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
+  transaction: Transaction!
   type: OrderActionType!
   from: User!
   order: Order!
@@ -167,6 +193,7 @@ type VaultAction @entity(immutable: true) {
   txHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
+  transaction: Transaction!
   type: VaultActionType!
   from: User!
   to: Vault!
@@ -181,6 +208,7 @@ type LotteryAction @entity(immutable: true) {
   from: User!
   type: LotteryActionType!
   timestamp: BigInt!
+  transaction: Transaction!
   coreAmount: BigInt!
   receiverAmount: Int!
   btcAmount: BigInt!
@@ -228,6 +256,16 @@ type OrderActionCount @entity {
   claimCore: Int!
   claimBtc: Int!
 }
+
+type FairShareActionCount @entity{
+  id: Bytes!
+  user: User!
+  total: Int!
+  claimDualCore: Int!
+  unbond: Int!
+  withdrawCore: Int
+}
+
 
 type VaultActionCount @entity {
   id: Bytes!

@@ -19,12 +19,12 @@ import {
   YieldBTC,
 } from "../types/schema";
 import {
-  LOTTERY,
-  ZERO_BI,
-  createLottery,
-  createLotteryActionCount,
-  createLotteryRound,
-  createUser,
+    LOTTERY,
+    ZERO_BI,
+    createLottery,
+    createLotteryActionCount,
+    createLotteryRound,
+    createUser, createTransaction, getId,
 } from "./helpers";
 
 export function handleDeposit(event: Deposit): void {
@@ -64,6 +64,8 @@ export function handleDeposit(event: Deposit): void {
   let lotteryAction = LotteryAction.load(event.transaction.hash);
   if (!lotteryAction) {
     lotteryAction = new LotteryAction(event.transaction.hash);
+    createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+    lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
     lotteryAction.type = "DepositNFTToLottery";
@@ -125,6 +127,8 @@ export function handleWithdraw(event: Withdraw): void {
   let lotteryAction = LotteryAction.load(event.transaction.hash);
   if (!lotteryAction) {
     lotteryAction = new LotteryAction(event.transaction.hash);
+    createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+    lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
     lotteryAction.type = "WithdrawNFTFromLottery";
@@ -164,6 +168,8 @@ export function handleWinnerClaim(event: ClaimReward): void {
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.params.user;
   lotteryAction.type = "WinnerClaimReward";
@@ -196,6 +202,8 @@ export function handleStartRound(event: Start): void {
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.transaction.from);
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "StartRound";
@@ -232,6 +240,8 @@ export function handleEndRound(event: EndRound): void {
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.transaction.from);
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "EndRound";
@@ -309,6 +319,8 @@ export function handleRequestRandomness(event: RequestRandomness): void {
   lotteryRound.save();
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.transaction.from);
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "RequestRandomness";
@@ -337,6 +349,8 @@ export function handleFullFillRandomness(event: FullfillRandomness): void {
   }
 
   const lotteryAction = new LotteryAction(event.transaction.hash);
+  createTransaction(getId(event), event.block.number, event.block.timestamp, event.transaction.from);
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "FullfillRandomness";
