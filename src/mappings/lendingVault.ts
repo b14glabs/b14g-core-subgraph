@@ -37,7 +37,9 @@ import {
   WCORE,
   createUser,
   createVault,
-  getId, createTransaction,
+  getId,
+  createTransaction,
+  ZERO_BI,
 } from "./helpers";
 import { MarketplaceStrategy } from "../types/LendingVault/MarketplaceStrategy";
 import { ColendPool } from "../types/LendingVault/ColendPool";
@@ -222,12 +224,16 @@ export function handleRedeem(event: Redeem): void {
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
-  action.type = "RedeemWbtc";
   action.from = event.params.user;
   action.amount = event.params.stakedAmount;
   action.rewardAmount = event.params.rewardAmount;
   action.to = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   action.totalCoreStaked = stats.totalCoreStaked;
+  if (event.params.stakedAmount === ZERO_BI) {
+    action.type = "ClaimReward";
+  } else {
+    action.type = "RedeemWbtc";
+  }
 
   lendingVault.totalUnbondActions += 1;
   lendingVault.totalActions += 1;

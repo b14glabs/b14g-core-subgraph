@@ -6,8 +6,8 @@ schema:
 features:
   - grafting
 graft:
-  base: QmUS5pwcGZJYSmC4umZScAk9T7BL2V5zV2dSFP8RVNTtjK
-  block:  25900000
+  base: QmP7qBXBUppWU5djGkwLp4NobHLxWT1Bmei3kDanNu6Q2d
+  block:  24169200
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken

@@ -17,6 +17,7 @@ enum VaultActionType {
   #  wbtc vault
   StakeWbtc
   RedeemWbtc
+  ClaimReward
   WithdrawWbtc
   BorrowCore
   RepayCore
