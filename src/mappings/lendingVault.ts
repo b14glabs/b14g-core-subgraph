@@ -40,6 +40,8 @@ import {
   getId,
   createTransaction,
   ZERO_BI,
+  DUAL_CORE_VAULT,
+  createUserActionCount,
 } from "./helpers";
 import { MarketplaceStrategy } from "../types/LendingVault/MarketplaceStrategy";
 import { ColendPool } from "../types/LendingVault/ColendPool";
@@ -168,9 +170,12 @@ export function handleStake(event: Stake): void {
   if (!user) {
     user = createUser(event.params.user, event.block.timestamp);
   }
-  const actionCount = UserActionCount.load(user.id);
+  let actionCount = UserActionCount.load(user.id);
   if (!actionCount) {
-    return;
+    actionCount = createUserActionCount(
+      event.params.user,
+      Bytes.fromHexString(LENDING_VAULT.toLowerCase())
+    );
   }
 
   let lendingVault = Vault.load(Bytes.fromHexString(LENDING_VAULT));

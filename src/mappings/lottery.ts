@@ -59,7 +59,10 @@ export function handleDeposit(event: Deposit): void {
 
   let userActionCount = UserActionCount.load(event.params.user);
   if (!userActionCount) {
-    userActionCount = createUserActionCount(event.params.user);
+    userActionCount = createUserActionCount(
+      event.params.user,
+      Bytes.fromHexString(LOTTERY.toLowerCase())
+    );
   }
 
   let lotteryAction = VaultAction.load(event.transaction.hash);

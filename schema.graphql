@@ -244,6 +244,7 @@ type FairShareActionCount @entity {
 type UserActionCount @entity {
   id: Bytes!
   user: User!
+  to: Bytes!
 
   total: Int!
   stake: Int!

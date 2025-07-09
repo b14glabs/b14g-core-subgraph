@@ -9,6 +9,7 @@ import {
 import {
   createTransaction,
   createUser,
+  createUserActionCount,
   DUAL_CORE_VAULT,
   getId,
   handleVaultAction,
@@ -60,7 +61,10 @@ export function handleStake(event: Stake): void {
 
   let userActionCount = UserActionCount.load(user.id);
   if (!userActionCount) {
-    return;
+    userActionCount = createUserActionCount(
+      event.params.user,
+      Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase())
+    );
   }
   userActionCount.stake += 1;
   userActionCount.total += 1;
