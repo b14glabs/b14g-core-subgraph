@@ -112,7 +112,7 @@ export function createTransaction(
 }
 
 export function createUserActionCount(id: Bytes, to: Bytes): UserActionCount {
-  let userActionCount = new UserActionCount(id);
+  let userActionCount = new UserActionCount(id.concat(to));
   userActionCount.user = id;
   userActionCount.to = to;
   userActionCount.total = 0;
