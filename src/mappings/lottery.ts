@@ -11,20 +11,22 @@ import {
 } from "../types/Lottery/Lottery";
 import {
   Lottery,
-  LotteryAction,
-  LotteryActionCount,
   LotteryRound,
   Order,
   User,
   YieldBTC,
+  UserActionCount,
+  VaultAction,
 } from "../types/schema";
 import {
   LOTTERY,
   ZERO_BI,
   createLottery,
-  createLotteryActionCount,
+  createUserActionCount,
   createLotteryRound,
   createUser,
+  createTransaction,
+  getId,
 } from "./helpers";
 
 export function handleDeposit(event: Deposit): void {
@@ -52,35 +54,41 @@ export function handleDeposit(event: Deposit): void {
   }
 
   lottery.totalYields = lottery.totalYields.plus(BigInt.fromI32(1));
-  lottery.totalBtcStaked = lottery.totalBtcStaked.plus(order.btcAmount);
 
   user.totalYeildDeposited = user.totalYeildDeposited.plus(BigInt.fromI32(1));
 
-  let lotteryActionCount = LotteryActionCount.load(event.params.user);
-  if (!lotteryActionCount) {
-    lotteryActionCount = createLotteryActionCount(event.params.user);
+  let userActionCount = UserActionCount.load(event.params.user);
+  if (!userActionCount) {
+    userActionCount = createUserActionCount(event.params.user);
   }
 
-  let lotteryAction = LotteryAction.load(event.transaction.hash);
+  let lotteryAction = VaultAction.load(event.transaction.hash);
   if (!lotteryAction) {
-    lotteryAction = new LotteryAction(event.transaction.hash);
+    lotteryAction = new VaultAction(event.transaction.hash);
+    createTransaction(
+      getId(event),
+      event.block.number,
+      event.block.timestamp,
+      event.params.user
+    );
+    lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
-    lotteryAction.type = "DepositNFTToLottery";
+    lotteryAction.type = "Stake";
     lotteryAction.timestamp = event.block.timestamp;
-    lotteryAction.coreAmount = ZERO_BI;
+    lotteryAction.amount = ZERO_BI;
     lotteryAction.btcAmount = ZERO_BI;
     lotteryAction.receiverAmount = 0;
     lotteryAction.round = lottery.currentRound;
-    lotteryAction.to = lottery.id;
-    lottery.totalActions += 1;
-    lottery.totalDeposit += 1;
+    lotteryAction.toLottery = lottery.id;
+    lottery.total += 1;
+    lottery.stake += 1;
 
-    lotteryActionCount.total += 1;
-    lotteryActionCount.stake += 1;
-    lotteryActionCount.save();
+    userActionCount.stake += 1;
+    userActionCount.total += 1;
+    userActionCount.save();
   }
-  lotteryAction.btcAmount = lotteryAction.btcAmount.plus(order.btcAmount);
+  lotteryAction.btcAmount = lotteryAction.btcAmount!.plus(order.btcAmount);
   lotteryAction.receiverAmount += 1;
   lotteryAction.save();
 
@@ -110,40 +118,46 @@ export function handleWithdraw(event: Withdraw): void {
 
   user.totalYeildDeposited = user.totalYeildDeposited.minus(BigInt.fromI32(1));
   if (user.totalYeildDeposited == ZERO_BI) {
-    lottery.totalParticipants = lottery.totalParticipants.minus(
-      BigInt.fromI32(1)
-    );
-  }
-  lottery.totalBtcStaked = lottery.totalBtcStaked.minus(order.btcAmount);
+                                             lottery.totalParticipants = lottery.totalParticipants.minus(
+                                               BigInt.fromI32(1)
+                                             );
+                                           }
   lottery.totalYields = lottery.totalYields.minus(BigInt.fromI32(1));
 
-  let lotteryActionCount = LotteryActionCount.load(event.params.user);
-  if (!lotteryActionCount) {
+  let userActionCount = UserActionCount.load(event.params.user);
+  if (!userActionCount) {
     return;
   }
 
-  let lotteryAction = LotteryAction.load(event.transaction.hash);
+  let lotteryAction = VaultAction.load(event.transaction.hash);
   if (!lotteryAction) {
-    lotteryAction = new LotteryAction(event.transaction.hash);
+    lotteryAction = new VaultAction(event.transaction.hash);
+    createTransaction(
+      getId(event),
+      event.block.number,
+      event.block.timestamp,
+      event.params.user
+    );
+    lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
-    lotteryAction.type = "WithdrawNFTFromLottery";
+    lotteryAction.type = "Withdraw";
     lotteryAction.timestamp = event.block.timestamp;
-    lotteryAction.coreAmount = ZERO_BI;
+    lotteryAction.amount = ZERO_BI;
     lotteryAction.btcAmount = ZERO_BI;
     lotteryAction.receiverAmount = 0;
     lotteryAction.round = lottery.currentRound;
-    lotteryAction.to = lottery.id;
+    lotteryAction.toLottery = lottery.id;
 
-    lottery.totalActions += 1;
-    lottery.totalWithdraw += 1;
+    lottery.total += 1;
+    lottery.withdraw += 1;
 
-    lotteryActionCount.total += 1;
-    lotteryActionCount.withdraw += 1;
-    lotteryActionCount.save();
+    userActionCount.withdraw += 1;
+    userActionCount.total += 1;
+    userActionCount.save();
   }
   lotteryAction.receiverAmount += 1;
-  lotteryAction.btcAmount = lotteryAction.btcAmount.plus(order.btcAmount);
+  lotteryAction.btcAmount = lotteryAction.btcAmount!.plus(order.btcAmount);
   lotteryAction.save();
 
   yieldBtc.isDeposited = false;
@@ -158,30 +172,37 @@ export function handleWinnerClaim(event: ClaimReward): void {
     return;
   }
 
-  let lotteryActionCount = LotteryActionCount.load(event.params.user);
-  if (!lotteryActionCount) {
+  let userActionCount = UserActionCount.load(event.params.user);
+  if (!userActionCount) {
     return;
   }
 
-  const lotteryAction = new LotteryAction(event.transaction.hash);
+  let lotteryAction = new VaultAction(event.transaction.hash);
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    event.params.user
+  );
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.params.user;
-  lotteryAction.type = "WinnerClaimReward";
+  lotteryAction.type = "ClaimReward";
   lotteryAction.timestamp = event.block.timestamp;
-  lotteryAction.coreAmount = event.params.amount;
+  lotteryAction.amount = event.params.amount;
   lotteryAction.round = lottery.currentRound;
-  lotteryAction.to = lottery.id;
+  lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
   lotteryAction.save();
 
-  lottery.totalActions += 1;
-  lottery.totalWinnerClaim += 1;
+  lottery.total += 1;
+  lottery.claim += 1;
   lottery.save();
 
-  lotteryActionCount.total += 1;
-  lotteryActionCount.claim += 1;
-  lotteryActionCount.save();
+  userActionCount.claim += 1;
+  userActionCount.total += 1;
+  userActionCount.save();
 }
 
 export function handleStartRound(event: Start): void {
@@ -195,14 +216,21 @@ export function handleStartRound(event: Start): void {
     user = createUser(event.transaction.from, event.block.timestamp);
   }
 
-  const lotteryAction = new LotteryAction(event.transaction.hash);
+  const lotteryAction = new VaultAction(event.transaction.hash);
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    event.transaction.from
+  );
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "StartRound";
   lotteryAction.timestamp = event.block.timestamp;
-  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.amount = ZERO_BI;
   lotteryAction.round = lottery.currentRound;
-  lotteryAction.to = lottery.id;
+  lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
   lotteryAction.save();
@@ -216,61 +244,110 @@ export function handleStartRound(event: Start): void {
   if (lottery.currentRound < event.params.round) {
     lottery.currentRound = lottery.currentRound.plus(BigInt.fromI32(1));
   }
-  lottery.totalStartRound += 1;
+  lottery.startRound += 1;
   lottery.save();
 }
 
 export function handleEndRound(event: EndRound): void {
-  let lottery = Lottery.load(Bytes.fromHexString(LOTTERY.toLowerCase()));
-  if (!lottery) {
-    return;
-  }
+                                                        let lottery = Lottery.load(
+                                                          Bytes.fromHexString(
+                                                            LOTTERY.toLowerCase()
+                                                          )
+                                                        );
+                                                        if (!lottery) {
+                                                          return;
+                                                        }
 
-  let user = User.load(event.transaction.from);
-  if (!user) {
-    user = createUser(event.transaction.from, event.block.timestamp);
-  }
+                                                        let user = User.load(
+                                                          event.transaction.from
+                                                        );
+                                                        if (!user) {
+                                                          user = createUser(
+                                                            event.transaction
+                                                              .from,
+                                                            event.block
+                                                              .timestamp
+                                                          );
+                                                        }
 
-  const lotteryAction = new LotteryAction(event.transaction.hash);
-  lotteryAction.txHash = event.transaction.hash;
-  lotteryAction.from = event.transaction.from;
-  lotteryAction.type = "EndRound";
-  lotteryAction.timestamp = event.block.timestamp;
-  lotteryAction.coreAmount = ZERO_BI;
-  lotteryAction.round = lottery.currentRound;
-  lotteryAction.to = lottery.id;
-  lotteryAction.btcAmount = ZERO_BI;
-  lotteryAction.receiverAmount = 0;
-  lotteryAction.save();
+                                                        const lotteryAction = new VaultAction(
+                                                          event.transaction.hash
+                                                        );
+                                                        createTransaction(
+                                                          getId(event),
+                                                          event.block.number,
+                                                          event.block.timestamp,
+                                                          event.transaction.from
+                                                        );
+                                                        lotteryAction.transaction = getId(
+                                                          event
+                                                        );
+                                                        lotteryAction.txHash =
+                                                          event.transaction.hash;
+                                                        lotteryAction.from =
+                                                          event.transaction.from;
+                                                        lotteryAction.type =
+                                                          "EndRound";
+                                                        lotteryAction.timestamp =
+                                                          event.block.timestamp;
+                                                        lotteryAction.amount = ZERO_BI;
+                                                        lotteryAction.round =
+                                                          lottery.currentRound;
+                                                        lotteryAction.toLottery =
+                                                          lottery.id;
+                                                        lotteryAction.btcAmount = ZERO_BI;
+                                                        lotteryAction.receiverAmount = 0;
+                                                        lotteryAction.save();
 
-  lottery.totalActions += 1;
-  lottery.totalEndRound += 1;
-  lottery.save();
+                                                        lottery.total += 1;
+                                                        lottery.endRound += 1;
+                                                        lottery.save();
 
-  const round = lottery.currentRound;
-  const lotteryRound = LotteryRound.load(round.toString());
-  if (!lotteryRound) {
-    return;
-  }
-  lotteryRound.endTime = event.block.timestamp;
-  for (let index = 0; index < event.params.winners.length; index++) {
-    lotteryRound.winners = lotteryRound.winners.concat([
-      event.params.winners[index],
-    ]);
-  }
+                                                        const round =
+                                                          lottery.currentRound;
+                                                        const lotteryRound = LotteryRound.load(
+                                                          round.toString()
+                                                        );
+                                                        if (!lotteryRound) {
+                                                          return;
+                                                        }
+                                                        lotteryRound.endTime =
+                                                          event.block.timestamp;
+                                                        for (
+                                                          let index = 0;
+                                                          index <
+                                                          event.params.winners
+                                                            .length;
+                                                          index++
+                                                        ) {
+                                                          lotteryRound.winners = lotteryRound.winners.concat(
+                                                            [
+                                                              event.params
+                                                                .winners[index],
+                                                            ]
+                                                          );
+                                                        }
 
-  lotteryRound.totalBtcStaked = lottery.totalBtcStaked;
-  lotteryRound.totalParticipants = lottery.totalParticipants;
-  lotteryRound.totalYields = lottery.totalYields;
-  lotteryRound.rewardAmount = event.params.reward;
-  lotteryRound.feeAmount = event.params.feeAmount;
-  lotteryRound.endRoundTx = event.transaction.hash;
+                                                        lotteryRound.totalParticipants =
+                                                          lottery.totalParticipants;
+                                                        lotteryRound.totalYields =
+                                                          lottery.totalYields;
+                                                        lotteryRound.rewardAmount =
+                                                          event.params.reward;
+                                                        lotteryRound.feeAmount =
+                                                          event.params.feeAmount;
+                                                        lotteryRound.endRoundTx =
+                                                          event.transaction.hash;
 
-  lottery.totalReward = lottery.totalReward.plus(event.params.reward);
-  lottery.totalFee = lottery.totalFee.plus(event.params.feeAmount);
-  lottery.save();
-  lotteryRound.save();
-}
+                                                        lottery.totalReward = lottery.totalReward.plus(
+                                                          event.params.reward
+                                                        );
+                                                        lottery.totalFee = lottery.totalFee.plus(
+                                                          event.params.feeAmount
+                                                        );
+                                                        lottery.save();
+                                                        lotteryRound.save();
+                                                      }
 
 export function handleClaimRewards(event: ClaimRewards): void {
   let lottery = Lottery.load(Bytes.fromHexString(LOTTERY.toLowerCase()));
@@ -308,20 +385,27 @@ export function handleRequestRandomness(event: RequestRandomness): void {
   lotteryRound.randomnessId = event.params.randomnessId;
   lotteryRound.save();
 
-  const lotteryAction = new LotteryAction(event.transaction.hash);
+  const lotteryAction = new VaultAction(event.transaction.hash);
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    event.transaction.from
+  );
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "RequestRandomness";
   lotteryAction.timestamp = event.block.timestamp;
-  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.amount = ZERO_BI;
   lotteryAction.round = lottery.currentRound;
-  lotteryAction.to = lottery.id;
+  lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
   lotteryAction.save();
 
-  lottery.totalActions += 1;
-  lottery.totalRequestRandomness += 1;
+  lottery.total += 1;
+  lottery.requestRandomness += 1;
   lottery.save();
 }
 
@@ -336,19 +420,26 @@ export function handleFullFillRandomness(event: FullfillRandomness): void {
     user = createUser(event.transaction.from, event.block.timestamp);
   }
 
-  const lotteryAction = new LotteryAction(event.transaction.hash);
+  const lotteryAction = new VaultAction(event.transaction.hash);
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    event.transaction.from
+  );
+  lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
   lotteryAction.from = event.transaction.from;
   lotteryAction.type = "FullfillRandomness";
   lotteryAction.timestamp = event.block.timestamp;
-  lotteryAction.coreAmount = ZERO_BI;
+  lotteryAction.amount = ZERO_BI;
   lotteryAction.round = lottery.currentRound;
-  lotteryAction.to = lottery.id;
+  lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
   lotteryAction.save();
 
-  lottery.totalActions += 1;
-  lottery.totalFullfillRandomness += 1;
+  lottery.total += 1;
+  lottery.fullfillRandomness += 1;
   lottery.save();
 }

@@ -31,5 +31,8 @@ jobs:
       - name: Prepare
         run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js codegen --output-dir src/types/
 
+      - name: Create subgraph.yaml
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js create ${{ secrets.SUBGRAPH_NAME_1 }} --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }}
+
       - name: Deploy
         run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js  deploy ${{ secrets.SUBGRAPH_NAME_1 }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }} --version-label $GITHUB_REF_NAME
