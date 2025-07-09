@@ -2,14 +2,13 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import {
   Lottery,
-  LotteryActionCount,
   LotteryRound,
   Order,
   Stats,
   User,
+  UserActionCount,
   Vault,
-  VaultAction,
-  VaultActionCount, Transaction
+  Transaction,
 } from "../types/schema";
 
 export enum ORDER_ACTION {
@@ -43,11 +42,11 @@ export const YIELD_BTC = "0xaC12840F51495F119290646824E503292607f679";
 export const LENDING_VAULT = "0xa3CD4D4A568b76CFF01048E134096D2Ba0171C27";
 export const LENDING_VAULT_MKP_STRATEGY =
   "0x3D096431C05F33B829D01d769f60847c603970d8";
-export const COLEND_POOL = "0x0CEa9F0F49F30d376390e480ba32f903B43B19C5"
-export const CORE_DEBT_TOKEN = "0xAc98BB397b8ba98FffDd0124Cdc50fA08d7C7a00"
-export const WBTC = "0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd"
-export const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
-export const PYTH = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729"
+export const COLEND_POOL = "0x0CEa9F0F49F30d376390e480ba32f903B43B19C5";
+export const CORE_DEBT_TOKEN = "0xAc98BB397b8ba98FffDd0124Cdc50fA08d7C7a00";
+export const WBTC = "0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd";
+export const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f";
+export const PYTH = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729";
 
 export function createUser(id: Bytes, timestamp: BigInt): User {
   let user = new User(id);
@@ -59,34 +58,19 @@ export function createUser(id: Bytes, timestamp: BigInt): User {
 
   user.save();
 
-  let vaultActionCount = VaultActionCount.load(id);
-  if (!vaultActionCount) {
-    vaultActionCount = new VaultActionCount(user.id);
-    vaultActionCount.user = user.id;
+  let userActionCount = UserActionCount.load(id);
+  if (!userActionCount) {
+    userActionCount = new UserActionCount(user.id);
+    userActionCount.user = user.id;
 
-    vaultActionCount.total = 0;
-    vaultActionCount.stake = 0;
-    vaultActionCount.unbond = 0;
-    vaultActionCount.withdrawdirect = 0;
-    vaultActionCount.withdraw = 0;
-    vaultActionCount.wbtc = 0;
-    vaultActionCount.wbtcStake = 0;
-    vaultActionCount.wbtcRedeem = 0;
-    vaultActionCount.wbtcWithdraw = 0;
-    vaultActionCount.wbtcClaimReward = 0;
-    vaultActionCount.save();
-  }
+    userActionCount.total = 0;
+    userActionCount.stake = 0;
+    userActionCount.withdraw = 0;
+    userActionCount.claim = 0;
+    userActionCount.unbond = 0;
+    userActionCount.withdrawDirect = 0;
 
-  let lotteryActionCount = LotteryActionCount.load(id);
-  if (!lotteryActionCount) {
-    lotteryActionCount = new LotteryActionCount(id);
-    lotteryActionCount.user = user.id;
-    lotteryActionCount.total = 0;
-    lotteryActionCount.stake = 0;
-    lotteryActionCount.withdraw = 0;
-    lotteryActionCount.claim = 0;
-
-    lotteryActionCount.save();
+    userActionCount.save();
   }
 
   let stats = Stats.load(B14G_ID);
@@ -107,53 +91,63 @@ export function createUser(id: Bytes, timestamp: BigInt): User {
 export function createVault(id: string): Vault {
   let vault = new Vault(Bytes.fromHexString(id));
   vault.totalStaked = ZERO_BI;
-  vault.totalActions = 0;
-  vault.totalDepositActions = 0;
-  vault.totalInstantRedeemActions = 0;
-  vault.totalUnbondActions = 0;
-  vault.totalWithdrawActions = 0;
-  vault.totalReInvestActions = 0;
-  vault.totalClaimRewardActons = 0;
+  vault.total = 0;
+  vault.stake = 0;
+  vault.redeemInstantly = 0;
+  vault.unbond = 0;
+  vault.withdraw = 0;
+  vault.reInvest = 0;
+  vault.claim = 0;
+  vault.claim = 0;
+  vault.borrowCore = 0;
+  vault.repayCore = 0;
+
   vault.save();
   return vault;
 }
 
-export function createTransaction(id: Bytes, blockNumber: BigInt, timestamp: BigInt, from: Bytes): Transaction {
-    let transaction = new Transaction(id);
-    transaction.blockNumber = blockNumber;
-    transaction.timestamp = timestamp;
-    transaction.from = from;
-    transaction.save()
-    return transaction;
+export function createTransaction(
+  id: Bytes,
+  blockNumber: BigInt,
+  timestamp: BigInt,
+  from: Bytes
+): Transaction {
+  let transaction = new Transaction(id);
+  transaction.blockNumber = blockNumber;
+  transaction.timestamp = timestamp;
+  transaction.from = from;
+  transaction.save();
+  return transaction;
 }
 
-export function createLotteryActionCount(id: Bytes): LotteryActionCount {
-  let lotteryActionCount = new LotteryActionCount(id);
-  lotteryActionCount.user = id;
-  lotteryActionCount.total = 0;
-  lotteryActionCount.stake = 0;
-  lotteryActionCount.withdraw = 0;
-  lotteryActionCount.claim = 0;
-  lotteryActionCount.save();
-  return lotteryActionCount;
+export function createUserActionCount(id: Bytes): UserActionCount {
+  let userActionCount = new UserActionCount(id);
+  userActionCount.user = id;
+  userActionCount.total = 0;
+  userActionCount.stake = 0;
+  userActionCount.withdraw = 0;
+  userActionCount.claim = 0;
+  userActionCount.unbond = 0;
+  userActionCount.withdrawDirect = 0;
+  userActionCount.save();
+  return userActionCount;
 }
 
 export function createLottery(): Lottery {
   let lottery = new Lottery(Bytes.fromHexString(LOTTERY.toLowerCase()));
   lottery.currentRound = ZERO_BI;
-  lottery.totalActions = 0;
-  lottery.totalDeposit = 0;
-  lottery.totalWithdraw = 0;
-  lottery.totalWinnerClaim = 0;
+  lottery.total = 0;
+  lottery.stake = 0;
+  lottery.withdraw = 0;
+  lottery.claim = 0;
   lottery.totalParticipants = ZERO_BI;
-  lottery.totalBtcStaked = ZERO_BI;
   lottery.totalYields = ZERO_BI;
   lottery.totalReward = ZERO_BI;
   lottery.totalFee = ZERO_BI;
-  lottery.totalRequestRandomness = 0;
-  lottery.totalFullfillRandomness = 0;
-  lottery.totalEndRound = 0;
-  lottery.totalStartRound = 0;
+  lottery.requestRandomness = 0;
+  lottery.fullfillRandomness = 0;
+  lottery.endRound = 0;
+  lottery.startRound = 0;
   lottery.save();
   return lottery;
 }
@@ -173,7 +167,6 @@ export function createLotteryRound(
   lotteryRound.feeAmount = ZERO_BI;
   lotteryRound.totalParticipants = ZERO_BI;
   lotteryRound.totalYields = ZERO_BI;
-  lotteryRound.totalBtcStaked = ZERO_BI;
   lotteryRound.timestamp = ZERO_BI;
   lotteryRound.endRoundTx = Bytes.fromHexString(ADDRESS_ZERO);
   lotteryRound.randomnessId = Bytes.fromHexString(ADDRESS_ZERO);
@@ -203,18 +196,18 @@ export function handleVaultAction(
     stats.totalCoreStaked = stats.totalCoreStaked.plus(coreAmount);
     stats.totalDualCore = stats.totalDualCore.plus(dualCoreAmount);
 
-    vault.totalDepositActions += 1;
+    vault.stake += 1;
   } else {
     stats.totalCoreStaked = stats.totalCoreStaked.minus(coreAmount);
     stats.totalDualCore = stats.totalDualCore.minus(dualCoreAmount);
 
     if (isNormalRedeem) {
-      vault.totalUnbondActions += 1;
+      vault.unbond += 1;
     } else {
-      vault.totalInstantRedeemActions += 1;
+      vault.redeemInstantly += 1;
     }
   }
-  vault.totalActions += 1;
+  vault.total += 1;
 
   vault.save();
   stats.save();
@@ -234,11 +227,11 @@ export function handleOrderAction(
   }
 
   if (type == ORDER_ACTION.CLAIM_BTC || type == ORDER_ACTION.CLAIM_CORE) {
-    order.totalActions += 1;
+    order.total += 1;
     if (type == ORDER_ACTION.CLAIM_BTC) {
-      order.totalClaimBtcActions += 1;
+      order.claimBtc += 1;
     } else {
-      order.totalClaimCoreActions += 1;
+      order.claimCore += 1;
     }
     order.save();
     return stats.totalCoreStaked;
@@ -250,7 +243,7 @@ export function handleOrderAction(
       ) {
         stats.totalCoreStaked = stats.totalCoreStaked.plus(coreAmount);
       }
-      order.totalStakeActions += 1;
+      order.stake += 1;
       order.realtimeStakeAmount = order.realtimeStakeAmount.plus(coreAmount);
       order.realtimeTier = order.realtimeStakeAmount.div(
         order.btcAmount as BigInt
@@ -262,14 +255,14 @@ export function handleOrderAction(
       ) {
         stats.totalCoreStaked = stats.totalCoreStaked.minus(coreAmount);
       }
-      order.totalWithdrawActions += 1;
+      order.withdraw += 1;
       order.realtimeStakeAmount = order.realtimeStakeAmount.minus(coreAmount);
       order.realtimeTier = order.realtimeStakeAmount.div(
         order.btcAmount as BigInt
       );
     }
 
-    order.totalActions += 1;
+    order.total += 1;
     order.save();
     stats.save();
 

@@ -128,11 +128,11 @@ export function handleClaimReward(event: ClaimReward): void {
     action.from = event.params.user;
     action.amount = event.params.dualCore;
     action.rewardAmount = event.params.dualCore;
-    action.to = Bytes.fromHexString(FAIR_SHARE_ORDER.toLowerCase());
+    action.toVault = Bytes.fromHexString(FAIR_SHARE_ORDER.toLowerCase());
     action.totalCoreStaked = stats.totalCoreStaked;
 
-    fairShareVault.totalInstantRedeemActions += 1;
-    fairShareVault.totalActions += 1;
+    fairShareVault.redeemInstantly += 1;
+    fairShareVault.total += 1;
 
 
     fairShareVault.save();
