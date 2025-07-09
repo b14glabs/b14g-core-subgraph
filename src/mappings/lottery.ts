@@ -81,6 +81,7 @@ export function handleDeposit(event: Deposit): void {
     lotteryAction.receiverAmount = 0;
     lotteryAction.round = lottery.currentRound;
     lotteryAction.toLottery = lottery.id;
+    lotteryAction.blockNumber = event.block.number;
     lottery.total += 1;
     lottery.stake += 1;
 
@@ -148,6 +149,7 @@ export function handleWithdraw(event: Withdraw): void {
     lotteryAction.receiverAmount = 0;
     lotteryAction.round = lottery.currentRound;
     lotteryAction.toLottery = lottery.id;
+    lotteryAction.blockNumber = event.block.number;
 
     lottery.total += 1;
     lottery.withdraw += 1;
@@ -194,6 +196,7 @@ export function handleWinnerClaim(event: ClaimReward): void {
   lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
+  lotteryAction.blockNumber = event.block.number;
   lotteryAction.save();
 
   lottery.total += 1;
@@ -277,6 +280,7 @@ export function handleEndRound(event: EndRound): void {
   lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
+  lotteryAction.blockNumber = event.block.number;
   lotteryAction.save();
 
   lottery.total += 1;
@@ -360,6 +364,7 @@ export function handleRequestRandomness(event: RequestRandomness): void {
   lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
+  lotteryAction.blockNumber = event.block.number;
   lotteryAction.save();
 
   lottery.total += 1;
@@ -395,6 +400,7 @@ export function handleFullFillRandomness(event: FullfillRandomness): void {
   lotteryAction.toLottery = lottery.id;
   lotteryAction.btcAmount = ZERO_BI;
   lotteryAction.receiverAmount = 0;
+  lotteryAction.blockNumber = event.block.number;
   lotteryAction.save();
 
   lottery.total += 1;
