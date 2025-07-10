@@ -59,7 +59,9 @@ export function handleStake(event: Stake): void {
     user = createUser(event.params.user, event.block.timestamp);
   }
 
-  let userActionCount = UserActionCount.load(user.id);
+  let userActionCount = UserActionCount.load(
+    user.id.concat(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
+  );
   if (!userActionCount) {
     userActionCount = createUserActionCount(
       event.params.user,
@@ -97,7 +99,9 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
 
   vaultAction.save();
 
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
+  );
   if (!userActionCount) {
     return;
   }
@@ -130,7 +134,9 @@ export function handleUnbond(event: Unbond): void {
     true
   );
   vaultAction.save();
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
+  );
   if (!userActionCount) {
     return;
   }
@@ -168,7 +174,9 @@ export function handleStakeWithdraw(event: Withdraw): void {
   vault.total += 1;
   vault.save();
 
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()))
+  );
   if (!userActionCount) {
     return;
   }

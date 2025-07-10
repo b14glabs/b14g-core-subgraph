@@ -170,7 +170,9 @@ export function handleStake(event: Stake): void {
   if (!user) {
     user = createUser(event.params.user, event.block.timestamp);
   }
-  let actionCount = UserActionCount.load(user.id);
+  let actionCount = UserActionCount.load(
+    user.id.concat(Bytes.fromHexString(LENDING_VAULT.toLowerCase()))
+  );
   if (!actionCount) {
     actionCount = createUserActionCount(
       event.params.user,
@@ -224,7 +226,9 @@ export function handleRedeem(event: Redeem): void {
   if (!stats) {
     return;
   }
-  const actionCount = UserActionCount.load(event.params.user);
+  const actionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(LENDING_VAULT.toLowerCase()))
+  );
   if (!actionCount) {
     return;
   }
@@ -274,7 +278,9 @@ export function handleWithdraw(event: Withdraw): void {
   if (!stats) {
     return;
   }
-  const actionCount = UserActionCount.load(event.params.user);
+  const actionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(LENDING_VAULT.toLowerCase()))
+  );
   if (!actionCount) {
     return;
   }

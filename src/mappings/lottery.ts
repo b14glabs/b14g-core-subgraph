@@ -57,7 +57,9 @@ export function handleDeposit(event: Deposit): void {
 
   user.totalYeildDeposited = user.totalYeildDeposited.plus(BigInt.fromI32(1));
 
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(LOTTERY.toLowerCase()))
+  );
   if (!userActionCount) {
     userActionCount = createUserActionCount(
       event.params.user,
@@ -128,7 +130,9 @@ export function handleWithdraw(event: Withdraw): void {
   }
   lottery.totalYields = lottery.totalYields.minus(BigInt.fromI32(1));
 
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(LOTTERY.toLowerCase()))
+  );
   if (!userActionCount) {
     return;
   }
@@ -177,7 +181,9 @@ export function handleWinnerClaim(event: ClaimReward): void {
     return;
   }
 
-  let userActionCount = UserActionCount.load(event.params.user);
+  let userActionCount = UserActionCount.load(
+    event.params.user.concat(Bytes.fromHexString(LOTTERY.toLowerCase()))
+  );
   if (!userActionCount) {
     return;
   }

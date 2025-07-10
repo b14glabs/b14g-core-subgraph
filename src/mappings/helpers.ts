@@ -49,35 +49,29 @@ export const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f";
 export const PYTH = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729";
 
 export function createUser(id: Bytes, timestamp: BigInt): User {
-                                                                 let user = new User(
-                                                                   id
-                                                                 );
-                                                                 user.dualCoreBalance = ZERO_BI;
-                                                                 user.coreStakedInOrder = ZERO_BI;
-                                                                 user.totalValidOrder = 0;
-                                                                 user.totalYeildDeposited = ZERO_BI;
-                                                                 user.createdAt = timestamp;
+  let user = new User(id);
+  user.dualCoreBalance = ZERO_BI;
+  user.coreStakedInOrder = ZERO_BI;
+  user.totalValidOrder = 0;
+  user.totalYeildDeposited = ZERO_BI;
+  user.createdAt = timestamp;
 
-                                                                 user.save();
+  user.save();
 
-                                                                 let stats = Stats.load(
-                                                                   B14G_ID
-                                                                 );
-                                                                 if (!stats) {
-                                                                   stats = new Stats(
-                                                                     B14G_ID
-                                                                   );
-                                                                   stats.totalStaker = 0;
-                                                                   stats.totalCoreStaked = ZERO_BI;
-                                                                   stats.totalDualCore = ZERO_BI;
-                                                                   stats.totalEarned = ZERO_BI;
-                                                                   stats.vaultMaxCap = ZERO_BI;
-                                                                   //   stats.listOrder = []
-                                                                 }
-                                                                 stats.totalStaker += 1;
-                                                                 stats.save();
-                                                                 return user;
-                                                               }
+  let stats = Stats.load(B14G_ID);
+  if (!stats) {
+    stats = new Stats(B14G_ID);
+    stats.totalStaker = 0;
+    stats.totalCoreStaked = ZERO_BI;
+    stats.totalDualCore = ZERO_BI;
+    stats.totalEarned = ZERO_BI;
+    stats.vaultMaxCap = ZERO_BI;
+    //   stats.listOrder = []
+  }
+  stats.totalStaker += 1;
+  stats.save();
+  return user;
+}
 
 export function createVault(id: string): Vault {
   let vault = new Vault(Bytes.fromHexString(id));
