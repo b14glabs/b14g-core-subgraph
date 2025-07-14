@@ -77,7 +77,7 @@ type User @entity {
   # order
   orderActionCount: [OrderActionCount!]! @derivedFrom(field: "user")
   #fairShare
-  fairShareActionCount: FairShareActionCount! @derivedFrom(field: "user")
+  fairShareActionCount: FairShareActionCount @derivedFrom(field: "user")
 
   totalValidOrder: Int!
 
