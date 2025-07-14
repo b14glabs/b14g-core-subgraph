@@ -94,6 +94,7 @@ type Transaction @entity(immutable: true) {
   type: TransactionType!
   toType: ToType!
   amount: BigInt!
+  rewardAmount: BigInt
   round: BigInt
   receiverAmount: Int
 }
