@@ -1,11 +1,11 @@
 enum OrderActionType {
-    CreateOrder
-    StakeCoreToOrder
-    WithdrawCoreFromOrder
-    ClaimCoreForBTCHolder
-    ClaimCoreForCoreHolder
-
+  CreateOrder
+  StakeCoreToOrder
+  WithdrawCoreFromOrder
+  ClaimCoreForBTCHolder
+  ClaimCoreForCoreHolder
 }
+
 enum UserActionType {
   Stake
   Withdraw
@@ -25,6 +25,39 @@ enum UserActionType {
   EndRound
   RequestRandomness
   FullfillRandomness
+}
+
+enum TransactionType {
+  Stake
+  Withdraw
+  ClaimReward
+  Redeem
+
+  # Vault-specific actions
+  RedeemInstantly
+  ReInvest
+  BorrowCore
+  RepayCore
+  CoreInvest
+  WithdrawCoreReward
+
+  # Lottery-specific actions
+  StartRound
+  EndRound
+  RequestRandomness
+  FullfillRandomness
+
+  CreateOrder
+  ClaimCoreForBTCHolder
+  ClaimCoreForCoreHolder
+}
+
+enum ToType {
+  DualCoreVault
+  WbtcVault
+  MergeMarketplace
+  FairShare
+  Lottery
 }
 
 type User @entity {
@@ -56,8 +89,13 @@ type Transaction @entity(immutable: true) {
   blockNumber: BigInt!
   timestamp: BigInt!
   from: User!
-  vaultAction: VaultAction @derivedFrom(field: "transaction")
-  orderAction: OrderAction @derivedFrom(field: "transaction")
+  txHash: Bytes!
+  to: Bytes!
+  type: TransactionType!
+  toType: ToType!
+  amount: BigInt!
+  round: BigInt
+  receiverAmount: Int
 }
 
 type StakedInOrder @entity {

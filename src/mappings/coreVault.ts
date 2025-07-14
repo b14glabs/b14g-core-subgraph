@@ -31,11 +31,16 @@ const coreVaultContract = CoreVault.bind(Address.fromString(DUAL_CORE_VAULT));
 
 export function handleStake(event: Stake): void {
   let vaultAction = new VaultAction(getId(event));
-  createTransaction(
+  const transaction = createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()),
+    "DualCoreVault",
+    "Stake",
+    event.params.coreAmount,
+    event.transaction.hash
   );
   vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
@@ -79,7 +84,12 @@ export function handleWithdrawDirect(event: WithdrawDirect): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()),
+    "DualCoreVault",
+    "RedeemInstantly",
+    event.params.coreAmount,
+    event.transaction.hash
   );
   vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
@@ -116,7 +126,12 @@ export function handleUnbond(event: Unbond): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()),
+    "DualCoreVault",
+    "Redeem",
+    event.params.coreAmount,
+    event.transaction.hash
   );
   vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
@@ -151,7 +166,12 @@ export function handleStakeWithdraw(event: Withdraw): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()),
+    "DualCoreVault",
+    "Withdraw",
+    event.params.amount,
+    event.transaction.hash
   );
   vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
@@ -186,12 +206,18 @@ export function handleStakeWithdraw(event: Withdraw): void {
 }
 
 export function handleReInvest(event: ReInvest): void {
+  const amount = coreVaultContract.totalStaked();
   let vaultAction = new VaultAction(getId(event));
   createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.transaction.from
+    event.transaction.from,
+    Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase()),
+    "DualCoreVault",
+    "ReInvest",
+    amount,
+    event.transaction.hash
   );
   vaultAction.transaction = getId(event);
   vaultAction.blockNumber = event.block.number;
@@ -199,7 +225,7 @@ export function handleReInvest(event: ReInvest): void {
   vaultAction.txHash = event.transaction.hash;
   vaultAction.type = "ReInvest";
   vaultAction.from = event.transaction.from;
-  vaultAction.amount = coreVaultContract.totalStaked();
+  vaultAction.amount = amount;
   vaultAction.toVault = Bytes.fromHexString(DUAL_CORE_VAULT.toLowerCase());
 
   let stats = Stats.load(B14G_ID);

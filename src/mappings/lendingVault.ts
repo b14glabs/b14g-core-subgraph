@@ -194,7 +194,12 @@ export function handleStake(event: Stake): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    "WbtcVault",
+    "Stake",
+    event.params.amount,
+    event.transaction.hash
   );
   action.transaction = getId(event);
   action.blockNumber = event.block.number;
@@ -234,12 +239,19 @@ export function handleRedeem(event: Redeem): void {
   }
 
   const action = new VaultAction(getId(event));
-  createTransaction(
+  const transaction = createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    "WbtcVault",
+    "ClaimReward",
+    event.params.stakedAmount,
+    event.transaction.hash
   );
+  transaction.rewardAmount = event.params.rewardAmount;
+
   action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
@@ -255,6 +267,7 @@ export function handleRedeem(event: Redeem): void {
 
     lendingVault.claim += 1;
   } else {
+    transaction.type = "Redeem";
     action.type = "Redeem";
     actionCount.unbond += 1;
 
@@ -264,6 +277,7 @@ export function handleRedeem(event: Redeem): void {
   lendingVault.total += 1;
   actionCount.total += 1;
 
+  transaction.save();
   actionCount.save();
   lendingVault.save();
   action.save();
@@ -286,12 +300,19 @@ export function handleWithdraw(event: Withdraw): void {
   }
 
   const action = new VaultAction(getId(event));
-  createTransaction(
+  const transaction = createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    "WbtcVault",
+    "Withdraw",
+    event.params.amount,
+    event.transaction.hash
   );
+  transaction.rewardAmount = event.params.coreReward;
+  transaction.save();
   action.transaction = getId(event);
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
@@ -330,7 +351,12 @@ export function handleLending(event: LendingInvest): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    Bytes.fromHexString(LENDING_VAULT.toLowerCase())
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    "WbtcVault",
+    event.params.isLend ? "BorrowCore" : "RepayCore",
+    event.params.lendAmount,
+    event.transaction.hash
   );
   action.transaction = getId(event);
   action.blockNumber = event.block.number;
@@ -372,12 +398,18 @@ export function handleCoreInvest(event: CoreInvest): void {
     return;
   }
 
+  const amount = lendingMkpStrategyContract.totalStaked();
   const action = new VaultAction(getId(event));
   createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    Bytes.fromHexString(LENDING_VAULT.toLowerCase())
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    Bytes.fromHexString(LENDING_VAULT.toLowerCase()),
+    "WbtcVault",
+    "CoreInvest",
+    amount,
+    event.transaction.hash
   );
   action.transaction = getId(event);
   action.blockNumber = event.block.number;
@@ -385,7 +417,7 @@ export function handleCoreInvest(event: CoreInvest): void {
   action.txHash = event.transaction.hash;
   action.type = "CoreInvest";
   action.from = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
-  action.amount = lendingMkpStrategyContract.totalStaked();
+  action.amount = amount;
   action.toVault = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   action.totalCoreStaked = stats.totalCoreStaked;
 

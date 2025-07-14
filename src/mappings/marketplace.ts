@@ -45,7 +45,12 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    from
+    from,
+    event.params.rewardReceiver,
+    "MergeMarketplace",
+    "CreateOrder",
+    ZERO_BI,
+    event.transaction.hash
   );
   orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
@@ -115,7 +120,12 @@ export function handleUserStake(event: StakeCoreProxy): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.from
+    event.params.from,
+    event.params.receiver,
+    "MergeMarketplace",
+    "Stake",
+    event.params.value,
+    event.transaction.hash
   );
   orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
@@ -177,7 +187,12 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.from
+    event.params.from,
+    event.params.receiver,
+    "MergeMarketplace",
+    "Withdraw",
+    event.params.value,
+    event.transaction.hash
   );
   orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
@@ -228,7 +243,14 @@ export function handleClaimProxy(event: ClaimProxy): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.from
+    event.params.from,
+    event.params.receiver,
+    "MergeMarketplace",
+    event.params.isBtcClaim
+      ? "ClaimCoreForBTCHolder"
+      : "ClaimCoreForCoreHolder",
+    event.params.amount,
+    event.transaction.hash
   );
   orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;

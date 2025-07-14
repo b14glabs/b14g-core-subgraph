@@ -95,12 +95,22 @@ export function createTransaction(
   id: Bytes,
   blockNumber: BigInt,
   timestamp: BigInt,
-  from: Bytes
+  from: Bytes,
+  to: Bytes,
+  toType: string,
+  type: string,
+  amount: BigInt,
+  txHash: Bytes
 ): Transaction {
   let transaction = new Transaction(id);
   transaction.blockNumber = blockNumber;
   transaction.timestamp = timestamp;
   transaction.from = from;
+  transaction.to = to;
+  transaction.toType = toType;
+  transaction.type = type;
+  transaction.amount = amount;
+  transaction.txHash = txHash;
   transaction.save();
   return transaction;
 }

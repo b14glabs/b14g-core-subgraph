@@ -17,6 +17,7 @@ import {
   YieldBTC,
   UserActionCount,
   VaultAction,
+  Transaction,
 } from "../types/schema";
 import {
   LOTTERY,
@@ -68,14 +69,9 @@ export function handleDeposit(event: Deposit): void {
   }
 
   let lotteryAction = VaultAction.load(event.transaction.hash);
+  let transaction = Transaction.load(event.transaction.hash);
   if (!lotteryAction) {
     lotteryAction = new VaultAction(event.transaction.hash);
-    createTransaction(
-      getId(event),
-      event.block.number,
-      event.block.timestamp,
-      event.params.user
-    );
     lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
@@ -94,9 +90,28 @@ export function handleDeposit(event: Deposit): void {
     userActionCount.total += 1;
     userActionCount.save();
   }
+
+  if (!transaction) {
+    transaction = createTransaction(
+      event.transaction.hash,
+      event.block.number,
+      event.block.timestamp,
+      event.params.user,
+      Bytes.fromHexString(LOTTERY.toLowerCase()),
+      "Lottery",
+      "Stake",
+      ZERO_BI,
+      event.transaction.hash
+    );
+    transaction.round = lottery.currentRound;
+  }
   lotteryAction.btcAmount = lotteryAction.btcAmount!.plus(order.btcAmount);
   lotteryAction.receiverAmount += 1;
   lotteryAction.save();
+
+  transaction.amount = transaction.amount.plus(order.btcAmount);
+  transaction.receiverAmount += 1;
+  transaction.save();
 
   yieldBtc.isDeposited = true;
   yieldBtc.save();
@@ -140,12 +155,6 @@ export function handleWithdraw(event: Withdraw): void {
   let lotteryAction = VaultAction.load(event.transaction.hash);
   if (!lotteryAction) {
     lotteryAction = new VaultAction(event.transaction.hash);
-    createTransaction(
-      getId(event),
-      event.block.number,
-      event.block.timestamp,
-      event.params.user
-    );
     lotteryAction.transaction = getId(event);
     lotteryAction.txHash = event.transaction.hash;
     lotteryAction.from = event.params.user;
@@ -165,9 +174,29 @@ export function handleWithdraw(event: Withdraw): void {
     userActionCount.total += 1;
     userActionCount.save();
   }
+
+  let transaction = Transaction.load(event.transaction.hash);
+  if (!transaction) {
+    transaction = createTransaction(
+      event.transaction.hash,
+      event.block.number,
+      event.block.timestamp,
+      event.params.user,
+      Bytes.fromHexString(LOTTERY.toLowerCase()),
+      "Lottery",
+      "Withdraw",
+      ZERO_BI,
+      event.transaction.hash
+    );
+  }
+
   lotteryAction.receiverAmount += 1;
   lotteryAction.btcAmount = lotteryAction.btcAmount!.plus(order.btcAmount);
   lotteryAction.save();
+
+  transaction.amount = transaction.amount.plus(order.btcAmount);
+  transaction.receiverAmount += 1;
+  transaction.save();
 
   yieldBtc.isDeposited = false;
   yieldBtc.save();
@@ -189,11 +218,16 @@ export function handleWinnerClaim(event: ClaimReward): void {
   }
 
   let lotteryAction = new VaultAction(event.transaction.hash);
-  createTransaction(
+  const transaction = createTransaction(
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    Bytes.fromHexString(LOTTERY.toLowerCase()),
+    "Lottery",
+    "ClaimReward",
+    ZERO_BI,
+    event.transaction.hash
   );
   lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
@@ -207,6 +241,9 @@ export function handleWinnerClaim(event: ClaimReward): void {
   lotteryAction.receiverAmount = 0;
   lotteryAction.blockNumber = event.block.number;
   lotteryAction.save();
+
+  transaction.rewardAmount = event.params.amount;
+  transaction.save();
 
   lottery.total += 1;
   lottery.claim += 1;
@@ -233,7 +270,12 @@ export function handleStartRound(event: Start): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.transaction.from
+    event.transaction.from,
+    Bytes.fromHexString(LOTTERY.toLowerCase()),
+    "Lottery",
+    "StartRound",
+    ZERO_BI,
+    event.transaction.hash
   );
   lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
@@ -277,7 +319,12 @@ export function handleEndRound(event: EndRound): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.transaction.from
+    event.transaction.from,
+    Bytes.fromHexString(LOTTERY.toLowerCase()),
+    "Lottery",
+    "EndRound",
+    ZERO_BI,
+    event.transaction.hash
   );
   lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
@@ -361,7 +408,12 @@ export function handleRequestRandomness(event: RequestRandomness): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.transaction.from
+    event.transaction.from,
+    Bytes.fromHexString(LOTTERY.toLowerCase()),
+    "Lottery",
+    "RequestRandomness",
+    ZERO_BI,
+    event.transaction.hash
   );
   lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
@@ -397,7 +449,12 @@ export function handleFullFillRandomness(event: FullfillRandomness): void {
     getId(event),
     event.block.number,
     event.block.timestamp,
-    event.transaction.from
+    event.transaction.from,
+    Bytes.fromHexString(LOTTERY.toLowerCase()),
+    "Lottery",
+    "FullfillRandomness",
+    ZERO_BI,
+    event.transaction.hash
   );
   lotteryAction.transaction = getId(event);
   lotteryAction.txHash = event.transaction.hash;
