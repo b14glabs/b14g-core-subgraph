@@ -41,17 +41,6 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
     from = fairShareOrder.getOwnerOfReceiver(event.params.rewardReceiver);
   }
   let orderAction = new OrderAction(getId(event));
-  createTransaction(
-    getId(event),
-    event.block.number,
-    event.block.timestamp,
-    from,
-    event.params.rewardReceiver,
-    "MergeMarketplace",
-    "CreateOrder",
-    ZERO_BI,
-    event.transaction.hash
-  );
   orderAction.transaction = getId(event);
   orderAction.blockNumber = event.block.number;
   orderAction.timestamp = event.block.timestamp;
@@ -105,11 +94,25 @@ export function handleNewOrder(event: CreateRewardReceiver): void {
   order.claimBtc = 0;
   // order.stakedAmount = new BigInt(0)
   order.total = 1;
+  let toType = "";
   if (from.notEqual(event.params.from)) {
     order.type = "FAIR_SHARE_ORDER";
+    toType = "FairShare";
   } else {
     order.type = "MERGE_ORDER";
+    toType = "MergeMarketplace";
   }
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    from,
+    event.params.rewardReceiver,
+    toType,
+    "CreateOrder",
+    ZERO_BI,
+    event.transaction.hash
+  );
   order.save();
   // stats.listOrder = stats.listOrder.concat([order.id])
 }
