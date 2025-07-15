@@ -119,7 +119,7 @@ export function handleClaimReward(event: ClaimReward): void {
         return;
     }
     const action = new VaultAction(getId(event));
-    createTransaction(
+    const transaction = createTransaction(
       getId(event),
       event.block.number,
       event.block.timestamp,
@@ -130,6 +130,9 @@ export function handleClaimReward(event: ClaimReward): void {
       event.params.dualCore,
       event.transaction.hash
     );
+    transaction.rewardAmount = event.params.dualCore;
+    transaction.save();
+    
     action.transaction = getId(event);
     action.blockNumber = event.block.number;
     action.timestamp = event.block.timestamp;
