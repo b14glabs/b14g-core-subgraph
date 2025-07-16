@@ -1,6 +1,12 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { Transfer, Yield } from "../types/Yield/Yield";
-import { ADDRESS_ZERO, LOTTERY, YIELD_BTC, createLottery } from "./helpers";
+import {
+  ADDRESS_ZERO,
+  LOTTERY,
+  YIELD_BTC,
+  ZERO_BI,
+  createLottery,
+} from "./helpers";
 import { Lottery, YieldBTC } from "../types/schema";
 
 const yieldContract = Yield.bind(Address.fromString(YIELD_BTC));
@@ -20,6 +26,8 @@ export function handleTransferToken(event: Transfer): void {
     yieldBtc.user = event.params.to;
     yieldBtc.order = receiver;
     yieldBtc.tokenId = event.params.tokenId;
+    yieldBtc.roundReward = ZERO_BI;
+    yieldBtc.updatedRound = ZERO_BI;
     yieldBtc.save();
   }
 }

@@ -119,7 +119,20 @@ export function handleClaimReward(event: ClaimReward): void {
         return;
     }
     const action = new VaultAction(getId(event));
-    createTransaction(getId(event), event.block.number, event.block.timestamp, event.params.user);
+    const transaction = createTransaction(
+      getId(event),
+      event.block.number,
+      event.block.timestamp,
+      event.params.user,
+      Bytes.fromHexString(FAIR_SHARE_ORDER),
+      "FairShare",
+      "ClaimReward",
+      event.params.dualCore,
+      event.transaction.hash
+    );
+    transaction.rewardAmount = event.params.dualCore;
+    transaction.save();
+    
     action.transaction = getId(event);
     action.blockNumber = event.block.number;
     action.timestamp = event.block.timestamp;
@@ -128,11 +141,11 @@ export function handleClaimReward(event: ClaimReward): void {
     action.from = event.params.user;
     action.amount = event.params.dualCore;
     action.rewardAmount = event.params.dualCore;
-    action.to = Bytes.fromHexString(FAIR_SHARE_ORDER.toLowerCase());
+    action.toVault = Bytes.fromHexString(FAIR_SHARE_ORDER.toLowerCase());
     action.totalCoreStaked = stats.totalCoreStaked;
 
-    fairShareVault.totalInstantRedeemActions += 1;
-    fairShareVault.totalActions += 1;
+    fairShareVault.redeemInstantly += 1;
+    fairShareVault.total += 1;
 
 
     fairShareVault.save();

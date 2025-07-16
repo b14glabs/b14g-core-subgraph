@@ -1,42 +1,63 @@
 enum OrderActionType {
-    CreateOrder
-    StakeCoreToOrder
-    WithdrawCoreFromOrder
-    ClaimCoreForBTCHolder
-    ClaimCoreForCoreHolder
-
+  CreateOrder
+  StakeCoreToOrder
+  WithdrawCoreFromOrder
+  ClaimCoreForBTCHolder
+  ClaimCoreForCoreHolder
 }
-enum VaultActionType {
-  #  core vault
-  StakeCoreToVault
-  RedeemNormallyCoreFromVault
-  RedeemInstantlyCoreFromVault
-  WithdrawCoreFromVault
-  ReInvestVault
 
-  #  wbtc vault
-  StakeWbtc
-  RedeemWbtc
+enum UserActionType {
+  Stake
+  Withdraw
   ClaimReward
-  WithdrawWbtc
+  Redeem
+
+  # Vault-specific actions
+  RedeemInstantly
+  ReInvest
   BorrowCore
   RepayCore
   CoreInvest
-
-  # FairShare vault
-  ClaimReward
-  UnbondReward
   WithdrawCoreReward
-}
 
-enum LotteryActionType {
-  DepositNFTToLottery
-  WithdrawNFTFromLottery
-  WinnerClaimReward
+  # Lottery-specific actions
   StartRound
   EndRound
   RequestRandomness
   FullfillRandomness
+}
+
+enum TransactionType {
+  Stake
+  Withdraw
+  ClaimReward
+  Redeem
+
+  # Vault-specific actions
+  RedeemInstantly
+  ReInvest
+  BorrowCore
+  RepayCore
+  CoreInvest
+  WithdrawCoreReward
+
+  # Lottery-specific actions
+  StartRound
+  EndRound
+  RequestRandomness
+  FullfillRandomness
+
+  CreateOrder
+  ClaimCoreForBTCHolder
+  ClaimCoreForCoreHolder
+}
+
+enum ToType {
+  DualCoreVault
+  WbtcVault
+  MergeMarketplace
+  FairShare
+  Lottery
 }
 
 type User @entity {
@@ -45,19 +66,16 @@ type User @entity {
   coreStakedInOrder: BigInt!
   stakedOrder: [StakedInOrder!]! @derivedFrom(field: "user")
   orderActionActivities: [OrderAction!]! @derivedFrom(field: "from")
-  vaultActionActivities: [VaultAction!]! @derivedFrom(field: "from")
-  lotteryActions: [LotteryAction!]! @derivedFrom(field: "from")
+  userActions: [VaultAction!]! @derivedFrom(field: "from")
   yieldBtcs: [YieldBTC!]! @derivedFrom(field: "user")
   totalYeildDeposited: BigInt!
   createdAt: BigInt!
   orders: [Order!]! @derivedFrom(field: "user")
 
-  # vault
-  vaultActionCount: VaultActionCount! @derivedFrom(field: "user")
+  # action counts
+  userActionCount: [UserActionCount!]! @derivedFrom(field: "user")
   # order
   orderActionCount: [OrderActionCount!]! @derivedFrom(field: "user")
-  #lottery
-  lotteryActionCount: LotteryActionCount! @derivedFrom(field: "user")
   #fairShare
   fairShareActionCount: FairShareActionCount @derivedFrom(field: "user")
 
@@ -66,17 +84,20 @@ type User @entity {
   transactions: [Transaction!]! @derivedFrom(field: "from")
 }
 
-type Transaction @entity(immutable: true){
+type Transaction @entity(immutable: true) {
   id: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
   from: User!
-  vaultAction: VaultAction @derivedFrom(field: "transaction")
-  orderAction:  OrderAction @derivedFrom(field: "transaction")
-  lotteryActions: LotteryAction @derivedFrom(field: "transaction")
-
+  txHash: Bytes!
+  to: Bytes!
+  type: TransactionType!
+  toType: ToType!
+  amount: BigInt!
+  rewardAmount: BigInt
+  round: BigInt
+  receiverAmount: Int
 }
-
 
 type StakedInOrder @entity {
   id: Bytes! #orderId+userId
@@ -88,16 +109,16 @@ type StakedInOrder @entity {
 type Vault @entity {
   id: Bytes!
   totalStaked: BigInt!
-  totalActions: Int!
-  totalDepositActions: Int!
-  totalUnbondActions: Int!
-  totalInstantRedeemActions: Int!
-  totalWithdrawActions: Int!
-  totalReInvestActions: Int!
-  totalClaimRewardActons: Int
-  totalBorrowCoreActions: Int
-  totalRepayCoreActions: Int
-  activities: [VaultAction!]! @derivedFrom(field: "to")
+  total: Int!
+  stake: Int!
+  unbond: Int!
+  redeemInstantly: Int!
+  withdraw: Int!
+  reInvest: Int!
+  claim: Int!
+  borrowCore: Int!
+  repayCore: Int!
+  activities: [VaultAction!]! @derivedFrom(field: "toVault")
 }
 
 enum OrderType {
@@ -117,25 +138,23 @@ type Order @entity {
   rewardSharingPortion: BigInt!
   btcEarned: BigInt!
   coreEarned: BigInt!
-  createdAtTimestamp: BigInt!
-  createdAtBlockNumber: BigInt!
+  createdAt: BigInt!
+  createdAtBlock: BigInt!
 
   realtimeTier: BigInt!
   realtimeStakeAmount: BigInt!
   # creation stats
-  totalActions: Int!
-  totalStakeActions: Int!
-  totalWithdrawActions: Int!
-  totalClaimCoreActions: Int!
-  totalClaimBtcActions: Int!
+  total: Int!
+  stake: Int!
+  withdraw: Int!
+  claimCore: Int!
+  claimBtc: Int!
   activities: [OrderAction!]! @derivedFrom(field: "order")
 
   orderActionCounts: [OrderActionCount!]! @derivedFrom(field: "order")
   stakedInOrder: [StakedInOrder!]! @derivedFrom(field: "order")
 
   yieldBtc: YieldBTC! @derivedFrom(field: "order")
-  roundReward: BigInt!
-  updatedRound: BigInt!
   type: OrderType!
 }
 
@@ -146,19 +165,18 @@ type Lottery @entity {
   totalReward: BigInt!
   totalFee: BigInt!
 
-  activities: [LotteryAction!]! @derivedFrom(field: "to")
-  totalActions: Int!
-  totalDeposit: Int!
-  totalWithdraw: Int!
-  totalWinnerClaim: Int!
-  totalRequestRandomness: Int!
-  totalFullfillRandomness: Int!
-  totalEndRound: Int!
-  totalStartRound: Int!
+  activities: [VaultAction!]! @derivedFrom(field: "toLottery")
+  total: Int!
+  stake: Int!
+  withdraw: Int!
+  claim: Int!
+  requestRandomness: Int!
+  fullfillRandomness: Int!
+  endRound: Int!
+  startRound: Int!
 
   totalParticipants: BigInt!
   totalYields: BigInt!
-  totalBtcStaked: BigInt!
 }
 
 type LotteryRound @entity {
@@ -172,7 +190,6 @@ type LotteryRound @entity {
   feeAmount: BigInt!
   totalParticipants: BigInt!
   totalYields: BigInt!
-  totalBtcStaked: BigInt!
   timestamp: BigInt!
   endRoundTx: Bytes!
   randomnessId: Bytes!
@@ -197,26 +214,20 @@ type VaultAction @entity(immutable: true) {
   blockNumber: BigInt!
   timestamp: BigInt!
   transaction: Transaction!
-  type: VaultActionType!
+  type: UserActionType!
   from: User!
-  to: Vault!
-  amount: BigInt!
-  rewardAmount: BigInt
-  totalCoreStaked: BigInt!
-}
 
-type LotteryAction @entity(immutable: true) {
-  id: Bytes!
-  txHash: Bytes!
-  from: User!
-  type: LotteryActionType!
-  timestamp: BigInt!
-  transaction: Transaction!
-  coreAmount: BigInt!
-  receiverAmount: Int!
-  btcAmount: BigInt!
-  round: BigInt!
-  to: Lottery!
+  # Vault-specific fields
+  toVault: Vault
+  amount: BigInt
+  rewardAmount: BigInt
+  totalCoreStaked: BigInt
+
+  # Lottery-specific fields
+  toLottery: Lottery
+  receiverAmount: Int
+  btcAmount: BigInt
+  round: BigInt
 }
 
 type VaultExchangeRate @entity {
@@ -269,31 +280,17 @@ type FairShareActionCount @entity {
   withdrawCore: Int
 }
 
-type VaultActionCount @entity {
+type UserActionCount @entity {
   id: Bytes!
   user: User!
-
-  total: Int!
-  stake: Int!
-  unbond: Int!
-  withdrawdirect: Int!
-  withdraw: Int!
-
-  wbtc: Int!
-  wbtcStake: Int!
-  wbtcRedeem: Int!
-  wbtcWithdraw: Int!
-  wbtcClaimReward: Int
-}
-
-type LotteryActionCount @entity {
-  id: Bytes!
-  user: User!
+  to: Bytes!
 
   total: Int!
   stake: Int!
   withdraw: Int!
   claim: Int!
+  unbond: Int!
+  withdrawDirect: Int!
 }
 
 type YieldBTC @entity {
@@ -302,6 +299,8 @@ type YieldBTC @entity {
   isDeposited: Boolean!
   user: User!
   order: Order!
+  roundReward: BigInt!
+  updatedRound: BigInt!
 }
 
 type LendingVaultApy @entity {
