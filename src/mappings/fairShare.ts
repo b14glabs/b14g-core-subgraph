@@ -33,7 +33,7 @@ export function handleWithdrawCoreReward(event: WithdrawCoreReward): void {
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
-  action.type = "WithdrawCoreReward";
+  action.type = "Withdraw";
   action.from = event.params.user;
   action.amount = event.params.amount;
   action.rewardAmount = event.params.amount;
@@ -83,7 +83,7 @@ export function handleUnbondReward(event: UnbondReward): void {
     event.params.user,
     Bytes.fromHexString(FAIR_SHARE_ORDER),
     "FairShare",
-    "Withdraw",
+    "Redeem",
     event.params.core,
     event.transaction.hash
   );
@@ -94,7 +94,7 @@ export function handleUnbondReward(event: UnbondReward): void {
   action.blockNumber = event.block.number;
   action.timestamp = event.block.timestamp;
   action.txHash = event.transaction.hash;
-  action.type = "UnbondReward";
+  action.type = "Redeem";
   action.from = event.params.user;
   action.amount = event.params.core;
   action.rewardAmount = event.params.dualCore;
