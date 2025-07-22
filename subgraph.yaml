@@ -4,11 +4,11 @@ repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
 features:
-  - nonFatalErrors
+  # - nonFatalErrors
   - grafting
-# graft:
-#   base: QmP7qBXBUppWU5djGkwLp4NobHLxWT1Bmei3kDanNu6Q2d
-#   block:  24169200
+graft:
+  base: QmeoPaRcUhCCc2zZgC17RaRU6NmgNSPvcRc6o5J13rz76m
+  block:  25900000
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
@@ -220,9 +220,9 @@ dataSources:
         - name: FairShareOrder
           file: ./abis/fairShareOrder.json
       eventHandlers:
-#        - event: WithdrawCoreReward(indexed address,uint256)
-#          handler: handleWithdrawCoreReward
-#        - event: UnbondReward(indexed address,uint256,uint256)
-#          handler: handleUnbondReward
+        - event: WithdrawCoreReward(indexed address,uint256)
+          handler: handleWithdrawCoreReward
+        - event: UnbondReward(indexed address,uint256,uint256)
+          handler: handleUnbondReward
         - event: ClaimReward(indexed address,uint256)
           handler: handleClaimReward
