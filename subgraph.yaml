@@ -226,3 +226,41 @@ dataSources:
           handler: handleUnbondReward
         - event: ClaimReward(indexed address,uint256)
           handler: handleClaimReward
+  - kind: ethereum/contract
+    name: LendingVaultV2
+    network: core
+    source:
+      address: '0xa3CD4D4A568b76CFF01048E134096D2Ba0171C27'
+      abi: LendingVaultV2
+      startBlock: 26643515
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/lendingVaultV2.ts
+      entities:
+        - LendingVaultV2
+      abis:
+        - name: LendingVaultV2
+          file: ./abis/lendingVaultV2.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ColendPool
+          file: ./abis/aavePool.json
+        - name: Pyth
+          file: ./abis/pyth.json
+        - name: MarketplaceStrategy
+          file: ./abis/marketplaceStrategy.json
+      eventHandlers:
+        - event: Stake(indexed address,uint256)
+          handler: handleStake
+        - event: Redeem(indexed address,uint256,uint256)
+          handler: handleRedeem
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
+        - event: LendingInvest(uint256,bool,uint256)
+          handler: handleLending
+        - event: CoreInvest(bytes)
+          handler: handleCoreInvest
+        - event: ClaimRewardFromStrategy(uint256)
+          handler: handleClaimRewardFromStrategy

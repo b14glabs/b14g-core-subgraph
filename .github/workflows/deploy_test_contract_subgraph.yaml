@@ -1,0 +1,37 @@
+name: Test Contract Subgraph
+
+on:
+  push:
+    branches:
+      - new-contract
+
+jobs:
+  subgraph-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install commands
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+          registry-url: https://registry.npmjs.org
+
+      - name: yarn add ts-node
+        run: yarn add ts-node
+
+      - name: yarn install
+        run: yarn install
+
+
+      - name: Prepare
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js codegen --output-dir src/types/
+
+      - name: Create
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js create ${{ secrets.SUBGRAPH_TEST_CONTRACT }} --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Deploy
+        run: node ./node_modules/@graphprotocol/graph-cli/bin/run.js  deploy ${{ secrets.SUBGRAPH_TEST_CONTRACT }} --ipfs https://thegraph.coredao.org/ipfs/ --node https://thegraph.coredao.org/deploy/ --access-token ${{ secrets.ACCESS_TOKEN }} --version-label $GITHUB_REF_NAME
