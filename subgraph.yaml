@@ -7,7 +7,7 @@ features:
   # - nonFatalErrors
   - grafting
 graft:
-  base: QmeoPaRcUhCCc2zZgC17RaRU6NmgNSPvcRc6o5J13rz76m
+  base: QmQ9HFTgw6EKqcX5jkLndBScSPBdYzGnis5rEtdFWvpo2t
   block:  25900000
 dataSources:
   - kind: ethereum/contract
@@ -230,7 +230,7 @@ dataSources:
     name: LendingVaultV2
     network: core
     source:
-      address: '0xa3CD4D4A568b76CFF01048E134096D2Ba0171C27'
+      address: '0x4Ed1ACf5323580a494960e0Ce8Ca9266707199b3'
       abi: LendingVaultV2
       startBlock: 26643515
     mapping:
