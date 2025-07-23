@@ -19,6 +19,7 @@ enum UserActionType {
   RepayCore
   CoreInvest
   WithdrawCoreReward
+  Migrate
 
   # Lottery-specific actions
   StartRound
@@ -40,6 +41,7 @@ enum TransactionType {
   RepayCore
   CoreInvest
   WithdrawCoreReward
+  Migrate
 
   # Lottery-specific actions
   StartRound
@@ -118,6 +120,7 @@ type Vault @entity {
   claim: Int!
   borrowCore: Int!
   repayCore: Int!
+  migrate: Int
   activities: [VaultAction!]! @derivedFrom(field: "toVault")
 }
 
@@ -290,6 +293,7 @@ type UserActionCount @entity {
   withdraw: Int!
   claim: Int!
   unbond: Int!
+  migrate: Int
   withdrawDirect: Int!
 }
 

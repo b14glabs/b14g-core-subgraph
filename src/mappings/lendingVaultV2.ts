@@ -11,6 +11,7 @@ import {
   CoreInvest,
   LendingInvest,
   LendingVaultV2,
+  MigrateStake,
   Redeem,
   Stake,
   Withdraw,
@@ -425,3 +426,76 @@ export function handleCoreInvest(event: CoreInvest): void {
   lendingVault.save();
   action.save();
 }
+
+export function handleMigrate(event: MigrateStake): void {
+  let vaultAsUser = User.load(Bytes.fromHexString(LENDING_VAULT_V2));
+  if (!vaultAsUser) {
+    createUser(
+      Bytes.fromHexString(LENDING_VAULT_V2.toLowerCase()),
+      event.block.timestamp
+    );
+  }
+  let user = User.load(event.params.user);
+  if (!user) {
+    user = createUser(event.params.user, event.block.timestamp);
+  }
+  let actionCount = UserActionCount.load(
+    user.id.concat(Bytes.fromHexString(LENDING_VAULT_V2.toLowerCase()))
+  );
+  if (!actionCount) {
+    actionCount = createUserActionCount(
+      event.params.user,
+      Bytes.fromHexString(LENDING_VAULT_V2.toLowerCase())
+    );
+  }
+
+  let lendingVault = Vault.load(Bytes.fromHexString(LENDING_VAULT_V2));
+  if (!lendingVault) {
+    lendingVault = createVault(LENDING_VAULT_V2);
+  }
+  const stats = Stats.load(B14G_ID);
+  if (!stats) {
+    return;
+  }
+
+  const action = new VaultAction(getId(event));
+  createTransaction(
+    getId(event),
+    event.block.number,
+    event.block.timestamp,
+    event.params.user,
+    Bytes.fromHexString(LENDING_VAULT_V2.toLowerCase()),
+    "WbtcVault",
+    "Migrate",
+    event.params.amount,
+    event.transaction.hash
+  );
+  action.transaction = getId(event);
+  action.blockNumber = event.block.number;
+  action.timestamp = event.block.timestamp;
+  action.txHash = event.transaction.hash;
+  action.type = "Migrate";
+  action.from = event.params.user;
+  action.amount = event.params.amount;
+  action.toVault = Bytes.fromHexString(LENDING_VAULT_V2.toLowerCase());
+  action.totalCoreStaked = stats.totalCoreStaked;
+
+  if (!lendingVault.migrate) {
+    lendingVault.migrate = 1;
+  } else {
+    lendingVault.migrate += 1;
+  }
+  lendingVault.total += 1;
+
+  if (actionCount.migrate == 1) {
+    actionCount.migrate = 1;
+  } else {
+    actionCount.migrate += 1;
+  }
+  actionCount.total += 1;
+
+  actionCount.save();
+  lendingVault.save();
+  action.save();
+}
+

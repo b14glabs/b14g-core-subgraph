@@ -7,8 +7,8 @@ features:
   # - nonFatalErrors
   - grafting
 graft:
-  base: QmQ9HFTgw6EKqcX5jkLndBScSPBdYzGnis5rEtdFWvpo2t
-  block:  25900000
+  base: QmTAv9HjFS2od3wt3DgarmUa35pxxmz6ne8UHuT8Mrnit1
+  block:  26643510
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
@@ -264,3 +264,5 @@ dataSources:
           handler: handleCoreInvest
         - event: ClaimRewardFromStrategy(uint256)
           handler: handleClaimRewardFromStrategy
+        - event: MigrateStake(indexed address,uint256)
+          handler: handleMigrate
