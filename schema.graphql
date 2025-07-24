@@ -309,6 +309,7 @@ type YieldBTC @entity {
 
 type LendingVaultApy @entity {
   id: Bytes!
+  vault: Vault!
   blockNumber: BigInt!
   timestamp: BigInt!
   apy: BigInt!

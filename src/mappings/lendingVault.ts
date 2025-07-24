@@ -150,6 +150,7 @@ export function handleClaimRewardFromStrategy(
     .times(BigInt.fromString("10000").minus(vaultFee))
     .div(BigInt.fromString("10000"));
   const data = new LendingVaultApy(getId(event));
+  data.vault = Bytes.fromHexString(LENDING_VAULT.toLowerCase());
   data.apy = apy;
   data.blockNumber = event.block.number;
   data.timestamp = event.block.timestamp;
