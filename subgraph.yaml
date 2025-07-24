@@ -7,7 +7,7 @@ features:
   # - nonFatalErrors
   - grafting
 graft:
-  base: QmTAv9HjFS2od3wt3DgarmUa35pxxmz6ne8UHuT8Mrnit1
+  base: Qmdwcn6SLwvq5XfbXzGjRimfcdWbJdHr8rjWU64fLqwhxq
   block:  24169296
 dataSources:
   - kind: ethereum/contract
