@@ -3,12 +3,12 @@ description: B14G
 repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
-features:
-  # - nonFatalErrors
-  - grafting
-graft:
-  base: Qmdwcn6SLwvq5XfbXzGjRimfcdWbJdHr8rjWU64fLqwhxq
-  block:  24169296
+# features:
+#   - nonFatalErrors
+#   - grafting
+# graft:
+#   base: Qmdwcn6SLwvq5XfbXzGjRimfcdWbJdHr8rjWU64fLqwhxq
+#   block:  24169296
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
