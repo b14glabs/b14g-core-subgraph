@@ -230,7 +230,7 @@ dataSources:
     name: LendingVaultV2
     network: core
     source:
-      address: '0x4Ed1ACf5323580a494960e0Ce8Ca9266707199b3'
+      address: '0x7597CcC096AC2E43f3CDcc2aE2f34DFCA640c976'
       abi: LendingVaultV2
       startBlock: 26643515
     mapping:
