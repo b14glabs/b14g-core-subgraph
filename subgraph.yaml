@@ -230,9 +230,9 @@ dataSources:
     name: LendingVaultV2
     network: core
     source:
-      address: '0x7597CcC096AC2E43f3CDcc2aE2f34DFCA640c976'
+      address: '0xdf0335ADe9fc8eaac71953F290eC1B45b8D72481'
       abi: LendingVaultV2
-      startBlock: 26643515
+      startBlock: 26875120
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

@@ -48,9 +48,9 @@ export const WBTC = "0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd";
 export const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f";
 export const PYTH = "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729";
 
-export const LENDING_VAULT_V2 = "0x7597CcC096AC2E43f3CDcc2aE2f34DFCA640c976";
+export const LENDING_VAULT_V2 = "0xdf0335ADe9fc8eaac71953F290eC1B45b8D72481";
 export const LENDING_VAULT_V2_MKP_STRATEGY =
-         "0x07F3c5c79CB4B42d1f1280094d6528F61F30CBa3";
+  "0x620cfF82faF31c8B80F2F410e4bF92Dc8c1CF93a";
 
 export function createUser(id: Bytes, timestamp: BigInt): User {
   let user = new User(id);
