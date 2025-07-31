@@ -8,7 +8,7 @@ features:
   - grafting
 graft:
   base: QmXGM7JTJ691Y35YhkKm8ieyEZBmNPXUKDvFq3XBs6kozg
-  block:  24169296
+  block:  26875115
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
