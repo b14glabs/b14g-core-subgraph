@@ -4,11 +4,11 @@ repository: https://github.com/b14g-core-subgraph
 schema:
   file: ./schema.graphql
 features:
-  # - nonFatalErrors
+  - nonFatalErrors
   - grafting
 graft:
-  base: QmeoPaRcUhCCc2zZgC17RaRU6NmgNSPvcRc6o5J13rz76m
-  block:  25900000
+  base: QmZnozQfCW7nbrbZFhDL2yehJBvToEovKjTjJWeg8zXELj
+  block:  26875115
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
@@ -226,3 +226,43 @@ dataSources:
           handler: handleUnbondReward
         - event: ClaimReward(indexed address,uint256)
           handler: handleClaimReward
+  - kind: ethereum/contract
+    name: LendingVaultV2
+    network: core
+    source:
+      address: '0xdf0335ADe9fc8eaac71953F290eC1B45b8D72481'
+      abi: LendingVaultV2
+      startBlock: 26875120
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/lendingVaultV2.ts
+      entities:
+        - LendingVaultV2
+      abis:
+        - name: LendingVaultV2
+          file: ./abis/lendingVaultV2.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ColendPool
+          file: ./abis/aavePool.json
+        - name: Pyth
+          file: ./abis/pyth.json
+        - name: MarketplaceStrategy
+          file: ./abis/marketplaceStrategy.json
+      eventHandlers:
+        - event: Stake(indexed address,uint256)
+          handler: handleStake
+        - event: Redeem(indexed address,uint256,uint256)
+          handler: handleRedeem
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
+        - event: LendingInvest(uint256,bool,uint256)
+          handler: handleLending
+        - event: CoreInvest(bytes)
+          handler: handleCoreInvest
+        - event: ClaimRewardFromStrategy(uint256)
+          handler: handleClaimRewardFromStrategy
+        - event: MigrateStake(indexed address,uint256)
+          handler: handleMigrate
