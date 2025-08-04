@@ -135,7 +135,7 @@ export function handleClaimRewardFromStrategy(
 
   const increasedPerShare = accPerShare1.minus(accPerShare2);
   const b14gApy = increasedPerShare
-    .times(corePrice)
+    .times(btcPrice)
     .times(daysInYear)
     .div(btcPrice.times(BigInt.fromString("10000000000")));
 
