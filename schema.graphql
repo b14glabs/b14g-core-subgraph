@@ -320,5 +320,5 @@ type LendingVaultApy @entity {
 type BtcTxLock @entity {
   id: Bytes!
   amount: BigInt!
-  timestamp: Int!
+  timestamp: BigInt!
 }
