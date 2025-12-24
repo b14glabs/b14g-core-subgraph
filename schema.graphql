@@ -316,3 +316,9 @@ type LendingVaultApy @entity {
   colendApy: BigInt!
   boostApy: BigInt!
 }
+
+type BtcTxLock @entity {
+  id: Bytes!
+  amount: BigInt!
+  timestamp: Int!
+}
