@@ -102,10 +102,11 @@ type Transaction @entity(immutable: true) {
 }
 
 type StakedInOrder @entity {
-  id: Bytes! #orderId+userId
+  id: Bytes! #orderId+userId+validator
   amount: BigInt!
   user: User!
   order: Order!
+  validator: Bytes!
 }
 
 type Vault @entity {

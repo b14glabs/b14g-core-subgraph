@@ -173,14 +173,48 @@ export function handleUserStake(event: StakeCoreProxy): void {
   orderActionCount.save();
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
   if (stakedInOrder === null) {
-    stakedInOrder = new StakedInOrder(event.params.receiver.concat(user.id));
-    stakedInOrder.amount = event.params.value;
-    stakedInOrder.user = event.params.from;
-    stakedInOrder.order = event.params.receiver;
   } else {
-    stakedInOrder.amount = stakedInOrder.amount.plus(event.params.value);
+    const validator = Order.load(event.params.receiver)!.validator;
+    let newStakedInOrder = StakedInOrder.load(
+      event.params.receiver.concat(user.id).concat(event.params.candidate)
+    );
+    if (!newStakedInOrder) {
+      newStakedInOrder = new StakedInOrder(
+        event.params.receiver.concat(user.id).concat(event.params.candidate)
+      );
+      newStakedInOrder.amount = event.params.value;
+      newStakedInOrder.user = event.params.from;
+      newStakedInOrder.order = event.params.receiver;
+      newStakedInOrder.validator = event.params.candidate;
+      if (validator!.toHexString() == event.params.candidate.toHexString()) {
+        newStakedInOrder.amount = newStakedInOrder.amount.plus(
+          stakedInOrder.amount
+        );
+      }
+    } else {
+      newStakedInOrder.amount = newStakedInOrder.amount.plus(
+        event.params.value
+      );
+    }
+    newStakedInOrder.save();
+    if (validator!.toHexString() != event.params.candidate.toHexString()) {
+      let newStakedInOrder2 = StakedInOrder.load(
+        event.params.receiver.concat(user.id).concat(validator!)
+      );
+      if (!newStakedInOrder2) {
+        newStakedInOrder2 = new StakedInOrder(
+          event.params.receiver.concat(user.id).concat(validator!)
+        );
+        newStakedInOrder2.amount = stakedInOrder.amount;
+        newStakedInOrder2.user = event.params.from;
+        newStakedInOrder2.order = event.params.receiver;
+        newStakedInOrder2.validator = validator! as Bytes;
+        newStakedInOrder2.save();
+      }
+    }
+    stakedInOrder.amount = ZERO_BI;
+    stakedInOrder.save();
   }
-  stakedInOrder.save();
   user.save();
 }
 
@@ -229,11 +263,27 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
   orderActionCount.total += 1;
   orderActionCount.save();
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
-  if (stakedInOrder === null) {
-    return;
+  if (stakedInOrder) {
+    let newStakedInOrder = StakedInOrder.load(
+      event.params.receiver.concat(user.id).concat(event.params.candidate)
+    );
+    if (!newStakedInOrder) {
+      newStakedInOrder = new StakedInOrder(
+        event.params.receiver.concat(user.id).concat(event.params.candidate)
+      );
+      newStakedInOrder.amount = stakedInOrder.amount.minus(event.params.value);
+      newStakedInOrder.user = event.params.from;
+      newStakedInOrder.order = event.params.receiver;
+      newStakedInOrder.validator = event.params.candidate;
+    } else {
+      newStakedInOrder.amount = newStakedInOrder.amount.minus(
+        event.params.value
+      );
+    }
+    newStakedInOrder.save();
+    stakedInOrder.amount = ZERO_BI;
+    stakedInOrder.save();
   }
-  stakedInOrder.amount = stakedInOrder.amount.minus(event.params.value);
-  stakedInOrder.save();
   user.save();
 }
 

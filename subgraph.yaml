@@ -6,9 +6,9 @@ schema:
 features:
   - nonFatalErrors
   - grafting
-# graft:
-#   base: QmR5Nx1aGYXVRrCzc4r6xniDzTKXH3fdhUQATBHXcmSk6T
-#   block:  26875115
+graft:
+  base: QmfB9JPkAj8wtNN139wwDod6cabPWxWnBUfUAbPMLuxHcZ
+  block:  31253795
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
