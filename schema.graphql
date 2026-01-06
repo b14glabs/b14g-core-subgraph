@@ -106,7 +106,7 @@ type StakedInOrder @entity {
   amount: BigInt!
   user: User!
   order: Order!
-  validator: Bytes!
+  validator: Bytes
 }
 
 type Vault @entity {
