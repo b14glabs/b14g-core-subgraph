@@ -172,7 +172,24 @@ export function handleUserStake(event: StakeCoreProxy): void {
   orderActionCount.total += 1;
   orderActionCount.save();
   let stakedInOrder = StakedInOrder.load(event.params.receiver.concat(user.id));
+  let newStakedInOrder = StakedInOrder.load(
+    event.params.receiver.concat(user.id).concat(event.params.candidate)
+  );
   if (stakedInOrder === null) {
+    if (!newStakedInOrder) {
+      newStakedInOrder = new StakedInOrder(
+        event.params.receiver.concat(user.id).concat(event.params.candidate)
+      );
+      newStakedInOrder.amount = event.params.value;
+      newStakedInOrder.user = event.params.from;
+      newStakedInOrder.order = event.params.receiver;
+      newStakedInOrder.validator = event.params.candidate;
+    } else {
+      newStakedInOrder.amount = newStakedInOrder.amount.plus(
+        event.params.value
+      );
+    }
+    newStakedInOrder.save();
   } else {
     const validator = Order.load(event.params.receiver)!.validator;
     let newStakedInOrder = StakedInOrder.load(
