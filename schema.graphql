@@ -102,10 +102,11 @@ type Transaction @entity(immutable: true) {
 }
 
 type StakedInOrder @entity {
-  id: Bytes! #orderId+userId
+  id: Bytes! #orderId+userId+validator
   amount: BigInt!
   user: User!
   order: Order!
+  validator: Bytes
 }
 
 type Vault @entity {
@@ -315,4 +316,10 @@ type LendingVaultApy @entity {
   apy: BigInt!
   colendApy: BigInt!
   boostApy: BigInt!
+}
+
+type BtcTxLock @entity {
+  id: Bytes!
+  amount: BigInt!
+  timestamp: BigInt!
 }

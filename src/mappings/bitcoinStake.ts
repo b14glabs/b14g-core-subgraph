@@ -1,5 +1,5 @@
 import {Address} from '@graphprotocol/graph-ts'
-import { Order, User } from "../types/schema";
+import { BtcTxLock, Order, User } from "../types/schema";
 import {BitcoinStake, delegated} from "../types/BitcoinStake/BitcoinStake";
 import { ADDRESS_ZERO } from "./helpers";
 
@@ -8,6 +8,13 @@ let bitcoinStake = BitcoinStake.bind(
 );
 
 export function handleBTCStaked(event: delegated): void {
+  let lockTx = BtcTxLock.load(event.params.txid);
+  if (lockTx === null) {
+    lockTx = new BtcTxLock(event.params.txid);
+    lockTx.amount = event.params.amount;
+    lockTx.timestamp = event.block.timestamp;
+    lockTx.save();
+  }
   let order = Order.load(event.params.delegator);
   if (order === null) return;
   if (order.bitcoinLockTx.toHexString() == ADDRESS_ZERO) {
