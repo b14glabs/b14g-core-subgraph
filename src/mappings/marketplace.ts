@@ -300,6 +300,18 @@ export function handleUserWithdraw(event: StakeCoreProxy): void {
     newStakedInOrder.save();
     stakedInOrder.amount = ZERO_BI;
     stakedInOrder.save();
+  } else {
+    let newStakedInOrder = StakedInOrder.load(
+      event.params.receiver.concat(user.id).concat(event.params.candidate)
+    );
+    if (!newStakedInOrder) {
+      return
+    }
+    newStakedInOrder.amount = newStakedInOrder.amount.minus(
+      event.params.value
+    );
+
+    newStakedInOrder.save();
   }
   user.save();
 }
