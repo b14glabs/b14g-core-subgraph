@@ -7,8 +7,8 @@ features:
   - nonFatalErrors
   - grafting
 graft:
-  base: QmZdGwvrL5BDZe9TpFaU6hxieYzYSVbkKqrKkjayo185Vf
-  block:  31109795
+  base: QmegFjrcWbrkKhKDcU7moYPLaTkUeerfCuE4ce42M8SUmn
+  block: 32865115
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
