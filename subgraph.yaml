@@ -7,8 +7,8 @@ features:
   - nonFatalErrors
   - grafting
 graft:
-  base: QmZdGwvrL5BDZe9TpFaU6hxieYzYSVbkKqrKkjayo185Vf
-  block:  31109795
+  base: QmegFjrcWbrkKhKDcU7moYPLaTkUeerfCuE4ce42M8SUmn
+  block: 32863140
 dataSources:
   - kind: ethereum/contract
     name: DualCoreToken
@@ -60,6 +60,8 @@ dataSources:
           handler: handleUserWithdraw
         - event: ClaimProxy(indexed address,indexed address,uint256,indexed bool)
           handler: handleClaimProxy
+        - event: FeeUpdated(uint256,uint256)
+          handler: handleFeeUpdate
   - kind: ethereum/contract
     name: BitcoinStake
     network: core
