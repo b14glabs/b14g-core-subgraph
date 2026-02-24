@@ -60,6 +60,8 @@ dataSources:
           handler: handleUserWithdraw
         - event: ClaimProxy(indexed address,indexed address,uint256,indexed bool)
           handler: handleClaimProxy
+        - event: FeeUpdated(uint256,uint256)
+          handler: handleFeeUpdate
   - kind: ethereum/contract
     name: BitcoinStake
     network: core

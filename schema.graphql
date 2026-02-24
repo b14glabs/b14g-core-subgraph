@@ -261,6 +261,7 @@ type Stats @entity {
   #   totalBtcStaked: BigInt!
   #   listOrder: [Order!]!
   totalEarned: BigInt!
+  marketplaceFee: BigInt
 }
 
 type OrderActionCount @entity {

@@ -4,6 +4,7 @@ import {
   CreateRewardReceiver,
   StakeCoreProxy,
   Marketplace,
+  FeeUpdated,
 } from "../types/Marketplace/Marketplace";
 import {
   Lottery,
@@ -409,4 +410,14 @@ export function handleClaimProxy(event: ClaimProxy): void {
   }
   orderActionCount.save();
   order.save();
+}
+
+export function handleFeeUpdate(event: FeeUpdated): void {
+  const stats = Stats.load("b14g");
+  if (!stats) {
+    return
+  }
+
+  stats.marketplaceFee = event.params.newFee
+  stats.save()
 }
